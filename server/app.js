@@ -1,4 +1,13 @@
 require('dotenv').config();
+
+console.log('Session Secret:', process.env.SESSION_SECRET); // Logga la chiave delle sessioni
+console.log('MongoDB URI:', process.env.MONGODB_URI); // Logga l'URL del database
+
+if (!process.env.SESSION_SECRET || !process.env.MONGODB_URI) {
+  console.error('Errore: Variabili d\'ambiente mancanti');
+  process.exit(1);
+}
+
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -11,13 +20,13 @@ const path = require('path');
 
 const app = express();
 
+// Connessione al database
+connectDB();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Connessione al database
-connectDB();
 
 // Session
 app.use(
