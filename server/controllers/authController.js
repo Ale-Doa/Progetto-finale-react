@@ -4,15 +4,20 @@ const bcrypt = require('bcrypt');
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ error: 'Email già registrata' });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email già registrata' });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: 'Registrazione avvenuta con successo' });
   } catch (error) {
+    console.error('Errore durante la registrazione:', error);
     res.status(500).json({ error: 'Errore durante la registrazione' });
   }
 };

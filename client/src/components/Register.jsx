@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { register } from '../services/api';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post('/auth/register', { name, email, password });
+      // Invia la richiesta di registrazione al backend
+      await register({ name, email, password }); // Usa la funzione register
       alert('Registrazione avvenuta con successo!');
-      window.location.href = '/login';
+      navigate('/login'); // Reindirizza alla pagina di login
     } catch (error) {
       setError('Errore durante la registrazione');
+      console.error('Errore durante la registrazione:', error.response?.data?.error || error.message);
     }
   };
 
@@ -27,21 +32,21 @@ const Register = () => {
           type="text"
           placeholder="Nome"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(e) => setName(e.target.value)}
           required
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button type="submit">Registrati</button>

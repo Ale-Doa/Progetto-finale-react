@@ -1,7 +1,7 @@
-require('dotenv').config();
+require('dotenv').config(); // Carica le variabili d'ambiente
 
-console.log('Session Secret:', process.env.SESSION_SECRET); // Logga la chiave delle sessioni
-console.log('MongoDB URI:', process.env.MONGODB_URI); // Logga l'URL del database
+console.log('Session Secret:', process.env.SESSION_SECRET);
+console.log('MongoDB URI:', process.env.MONGODB_URI);
 
 if (!process.env.SESSION_SECRET || !process.env.MONGODB_URI) {
   console.error('Errore: Variabili d\'ambiente mancanti');
@@ -45,6 +45,12 @@ app.use(
 app.use('/auth', authRoutes);
 app.use('/bookings', bookingsRoutes);
 app.use('/admin', adminRoutes);
+
+// Log delle richieste API
+app.use((req, res, next) => {
+  console.log(`Richiesta ricevuta: ${req.method} ${req.url}`); // Logga tutte le richieste
+  next();
+});
 
 // Serve static files per React in produzione
 if (process.env.NODE_ENV === 'production') {

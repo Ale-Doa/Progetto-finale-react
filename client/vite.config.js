@@ -7,10 +7,10 @@ export default defineConfig({
     port: 3001, // Porta su cui Vite avvia il frontend
     proxy: {
       '/auth': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3000', // Indirizzo del backend
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/auth/, ''),
+        rewrite: (path) => path.replace(/^\/auth/, ''), // Rimuove "/auth" dalla richiesta
       },
       '/bookings': {
         target: 'http://localhost:3000',

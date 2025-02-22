@@ -1,15 +1,16 @@
 import axios from 'axios';
 
+// Non specificare l'URL completo del backend
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000', // Indirizzo del backend
+  baseURL: '', // Lascia vuoto o usa '/'
 });
+
+export const register = async (userData) => {
+  return await apiClient.post('/auth/register', userData); 
+};
 
 export const login = async (credentials) => {
   return await apiClient.post('/auth/login', credentials);
-};
-
-export const register = async (userData) => {
-  return await apiClient.post('/auth/register', userData);
 };
 
 export const getBookings = async (date) => {
