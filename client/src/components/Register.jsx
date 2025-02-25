@@ -12,10 +12,11 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Dati inviati per la registrazione:', { name, email, password }); // Logga i dati prima della richiesta
     try {
       // Invia la richiesta di registrazione al backend
       await register({ name, email, password }); // Usa la funzione register
-      alert('Registrazione avvenuta con successo!');
+      console.log('Registrazione avvenuta con successo!');
       navigate('/login'); // Reindirizza alla pagina di login
     } catch (error) {
       setError('Errore durante la registrazione');

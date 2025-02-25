@@ -5,6 +5,9 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Logga i dati ricevuti
+    console.log('(log di authController) Dati ricevuti per la registrazione:', { name, email, password });
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'Email già registrata' });

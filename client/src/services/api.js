@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-// Non specificare l'URL completo del backend
 const apiClient = axios.create({
   baseURL: '', // Lascia vuoto o usa '/'
 });
 
 export const register = async (userData) => {
-  return await apiClient.post('/auth/register', userData); 
+  console.log('Invio dati al backend:', userData); // Logga i dati prima della richiesta
+  return await apiClient.post('/auth/register', userData); // Invia i dati al backend
 };
 
 export const login = async (credentials) => {
