@@ -1,12 +1,26 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 
 // Load environment variables
 dotenv.config();
+
+// Encode MongoDB password if needed
+if (process.env.MONGO_URI) {
+  // Extract parts of the connection string
+  const [prefix, rest] = process.env.MONGO_URI.split('://');
+  const [credentials, remainder] = rest.split('@');
+  const [username, password] = credentials.split(':');
+  
+  // Reconstruct with encoded password
+  const encodedPassword = encodeURIComponent(password);
+  process.env.MONGO_URI = `${prefix}://${username}:${encodedPassword}@${remainder}`;
+}
+
+// Import connectDB after encoding the password
+const connectDB = require('./config/db');
 
 // Connect to database
 connectDB();
