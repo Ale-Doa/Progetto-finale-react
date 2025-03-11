@@ -1,7 +1,9 @@
 import axios from 'axios';
 
-// Update the API_URL to use an environment variable
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// The issue is that the API URL needs to be explicitly set for production
+const API_URL = import.meta.env.MODE === 'production' 
+  ? 'https://progetto-finale-react.onrender.com/api'
+  : 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
