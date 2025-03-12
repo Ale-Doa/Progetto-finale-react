@@ -88,6 +88,32 @@ npm run dev
 ```
 L'applicazione sarà disponibile all'indirizzo http://localhost:5173
 
+### Risoluzione Problemi Comuni
+**Errore EPREM durante l'esecuzione di vite**
+Se riscontri questo errore:
+```
+Error: EPERM: operation not permitted, rmdir 'path\to\node_modules\.vite\deps'
+```
+
+**Prova queste soluzioni:**
+1. Chiudi tutti i processi Node.js attivi:
+```
+taskkill /f /im node.exe
+```
+2. Rimuovi la cartella .vite:
+```
+cd frontend
+rmdir /s /q node_modules\.vite
+```
+3. Esegui il terminale come amministratore e riprova a lanciare il comando.
+4. Riavvia il computer se il problema persiste.
+5. Reinstalla le dipendenze come ultima risorsa:
+```
+cd frontend
+rmdir /s /q node_modules
+npm install
+```
+
 ### Struttura del Progetto
 
 ```
