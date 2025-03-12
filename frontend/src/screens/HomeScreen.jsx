@@ -29,7 +29,9 @@ const HomeScreen = () => {
       {/* Announcements Section */}
       {error && <div className="error">{error}</div>}
       {loading ? (
-        <div>Loading announcements...</div>
+        <div className="loading">Loading announcements...</div>
+      ) : error ? (
+        <div className="error">{error}</div>
       ) : announcements.length > 0 ? (
         <div className="announcements-container">
           <h2>Announcements</h2>

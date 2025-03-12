@@ -273,61 +273,67 @@ const AdminScreen = () => {
         </>
       ) : (
         <div className="announcements-management">
-          {/* Announcements management content remains unchanged */}
-          <h2>Create New Announcement</h2>
-          <form onSubmit={handleAnnouncementSubmit}>
-            <div className="form-group">
-              <label htmlFor="title">Title</label>
-              <input
-                type="text"
-                id="title"
-                value={newAnnouncement.title}
-                onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="content">Content</label>
-              <textarea
-                id="content"
-                value={newAnnouncement.content}
-                onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
-                required
-                rows="4"
-              ></textarea>
-            </div>
-            {editingAnnouncement && (
+          <div className="announcement-form-container">
+            <h2>{editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}</h2>
+            <form onSubmit={handleAnnouncementSubmit} className="announcement-form">
               <div className="form-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={newAnnouncement.isActive}
-                    onChange={(e) => setNewAnnouncement({...newAnnouncement, isActive: e.target.checked})}
-                  />
-                  Active
-                </label>
+                <label htmlFor="title">Title</label>
+                <input
+                  type="text"
+                  id="title"
+                  value={newAnnouncement.title}
+                  onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+                  required
+                  placeholder="Enter announcement title"
+                />
               </div>
-            )}
-            <button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : editingAnnouncement ? 'Update Announcement' : 'Create Announcement'}
-            </button>
-            {editingAnnouncement && (
-              <button 
-                type="button" 
-                onClick={() => {
-                  setEditingAnnouncement(null);
-                  setNewAnnouncement({ title: '', content: '' });
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </form>
+              <div className="form-group">
+                <label htmlFor="content">Content</label>
+                <textarea
+                  id="content"
+                  value={newAnnouncement.content}
+                  onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
+                  required
+                  rows="4"
+                  placeholder="Enter announcement content"
+                ></textarea>
+              </div>
+              {editingAnnouncement && (
+                <div className="form-group checkbox-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={newAnnouncement.isActive}
+                      onChange={(e) => setNewAnnouncement({...newAnnouncement, isActive: e.target.checked})}
+                    />
+                    <span>Active</span>
+                  </label>
+                </div>
+              )}
+              <div className="form-actions">
+                <button type="submit" disabled={loading} className="primary-button">
+                  {loading ? 'Saving...' : editingAnnouncement ? 'Update Announcement' : 'Create Announcement'}
+                </button>
+                {editingAnnouncement && (
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setEditingAnnouncement(null);
+                      setNewAnnouncement({ title: '', content: '' });
+                    }}
+                    className="secondary-button"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
           
           <h2>All Announcements</h2>
-          {loading && <div>Loading...</div>}
+          {loading && <div className="loading">Loading...</div>}
           {announcements.length === 0 ? (
-            <p>No announcements found.</p>
+            <p className="no-data">No announcements found.</p>
           ) : (
             <div className="announcements-list">
               {announcements.map((announcement) => (
