@@ -9,16 +9,9 @@ const BookingScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  const timeSlots = [
-    '8.30-10.00',
-    '10.00-12.30',
-    '14.00-15.30',
-    '15.30-17.00',
-    '17.00-18.30',
-    '18.30-20.00',
-    '20.00-21.30',
-  ];
+  
+  // Costante per il numero massimo di prenotazioni per fascia oraria
+  const MAX_BOOKINGS_PER_SLOT = 15;
 
   useEffect(() => {
     fetchUserBookings();
@@ -90,10 +83,14 @@ const BookingScreen = () => {
       setSuccess('');
       
       try {
+        // Aggiungiamo un log per verificare l'ID della prenotazione
+        console.log('Cancelling booking with ID:', id);
         await deleteBooking(id);
         setSuccess('Booking cancelled successfully!');
+        // Aggiorniamo la lista delle prenotazioni dopo la cancellazione
         fetchUserBookings();
       } catch (err) {
+        console.error('Error cancelling booking:', err);
         setError(err.response?.data?.message || 'Failed to cancel booking');
       } finally {
         setLoading(false);
@@ -105,12 +102,6 @@ const BookingScreen = () => {
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  // Get available time slots that aren't booked
-  const getAvailableTimeSlots = () => {
-    if (!availableSlots || availableSlots.length === 0) return [];
-    return availableSlots.filter(slot => !slot.isBooked);
   };
 
   return (
@@ -153,7 +144,7 @@ const BookingScreen = () => {
                   {availableSlots.map((slot) => (
                     !slot.isBooked && (
                       <option key={slot.timeSlot} value={slot.timeSlot}>
-                        {slot.timeSlot}
+                        {slot.timeSlot} - {MAX_BOOKINGS_PER_SLOT - (slot.bookingsCount || 0)} spots left
                       </option>
                     )
                   ))}

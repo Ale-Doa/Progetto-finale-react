@@ -1,5 +1,35 @@
 const Booking = require('../models/bookingModel');
 
+// Funzione per verificare se una data è un weekend o una festività italiana
+const isWeekendOrHoliday = (date) => {
+  const day = date.getDay();
+  // 0 è domenica, 6 è sabato
+  if (day === 0 || day === 6) {
+    return true;
+  }
+  
+  // Festività italiane (formato MM-DD)
+  const italianHolidays = [
+    '01-01', // Capodanno
+    '01-06', // Epifania
+    '04-25', // Festa della Liberazione
+    '05-01', // Festa del Lavoro
+    '06-02', // Festa della Repubblica
+    '08-15', // Ferragosto
+    '11-01', // Tutti i Santi
+    '12-08', // Immacolata Concezione
+    '12-25', // Natale
+    '12-26', // Santo Stefano
+  ];
+  
+  // Formato MM-DD per la data corrente
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const dayOfMonth = date.getDate().toString().padStart(2, '0');
+  const dateString = `${month}-${dayOfMonth}`;
+  
+  return italianHolidays.includes(dateString);
+};
+
 // @desc    Create a new booking
 // @route   POST /api/bookings
 // @access  Private/Premium
@@ -29,14 +59,14 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'You already have a booking for this date' });
     }
     
-    // Check if the time slot is available
-    const slotBooked = await Booking.findOne({
+    // Check if the time slot has reached the maximum number of bookings (15)
+    const bookingsCount = await Booking.countDocuments({
       date: bookingDate,
       timeSlot,
     });
     
-    if (slotBooked) {
-      return res.status(400).json({ message: 'This time slot is already booked' });
+    if (bookingsCount >= 15) {
+      return res.status(400).json({ message: 'This time slot is fully booked' });
     }
     
     const booking = await Booking.create({
@@ -74,26 +104,17 @@ const deleteBooking = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
     
-    // Check if booking belongs to user
-    if (booking.user.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'Not authorized' });
+    // Check if booking belongs to user or user is admin
+    if (booking.user.toString() !== req.user._id.toString() && req.user.membershipType !== 'admin') {
+      return res.status(401).json({ message: 'Not authorized to delete this booking' });
     }
     
-    // Check if booking is for tomorrow or later
-    const bookingDate = new Date(booking.date);
-    bookingDate.setHours(0, 0, 0, 0);
+    // Use deleteOne instead of remove (which is deprecated)
+    await Booking.deleteOne({ _id: req.params.id });
     
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
-    
-    if (bookingDate < tomorrow) {
-      return res.status(400).json({ message: 'Cannot cancel bookings for today or past dates' });
-    }
-    
-    await booking.remove();
     res.json({ message: 'Booking removed' });
   } catch (error) {
+    console.error('Error deleting booking:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -119,21 +140,28 @@ const getBookingsByDate = async (req, res) => {
       '20.00-21.30',
     ];
     
-    // Create a map of booked time slots
-    const bookedSlots = bookings.reduce((acc, booking) => {
-      acc[booking.timeSlot] = {
-        bookingId: booking._id,
-        userName: booking.user.name,
-        userEmail: booking.user.email,
+    // Count bookings for each time slot
+    const bookingCounts = {};
+    for (const slot of allTimeSlots) {
+      bookingCounts[slot] = await Booking.countDocuments({ date, timeSlot: slot });
+    }
+    
+    // Create availability array with booking counts
+    const availability = allTimeSlots.map((slot) => {
+      const slotBookings = bookings.filter(b => b.timeSlot === slot);
+      const isFullyBooked = bookingCounts[slot] >= 15;
+      
+      return {
+        timeSlot: slot,
+        isBooked: isFullyBooked, // Now "isBooked" means the slot is fully booked
+        bookingsCount: bookingCounts[slot],
+        booking: slotBookings.length > 0 ? {
+          bookingId: slotBookings[0]._id,
+          userName: slotBookings[0].user.name,
+          userEmail: slotBookings[0].user.email,
+        } : null,
       };
-      return acc;
-    }, {});
-    // Create availability array
-    const availability = allTimeSlots.map((slot) => ({
-      timeSlot: slot,
-      isBooked: Boolean(bookedSlots[slot]),
-      booking: bookedSlots[slot] || null,
-    }));
+    });
     
     res.json(availability);
   } catch (error) {

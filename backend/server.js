@@ -1,8 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const userRoutes = require('./routes/userRoutes');
-const bookingRoutes = require('./routes/bookingRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -35,13 +33,20 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/bookings', bookingRoutes);
+// Import routes
+const userRoutes = require('./routes/userRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const announcementRoutes = require('./routes/announcementRoutes');
 
 // Basic route
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
+
+// Mount routes
+app.use('/api/users', userRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/announcements', announcementRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getUserProfile } from '../services/api';
 
-const ProfileScreen = ({ user }) => {
+const ProfileScreen = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -9,14 +9,9 @@ const ProfileScreen = ({ user }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Use the user data if available, otherwise fetch from API
-        if (user) {
-          setProfile(user);
-          setLoading(false);
-        } else {
-          const data = await getUserProfile();
-          setProfile(data);
-        }
+        // Always fetch the latest profile data from the API
+        const data = await getUserProfile();
+        setProfile(data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load profile');
       } finally {
@@ -25,7 +20,7 @@ const ProfileScreen = ({ user }) => {
     };
 
     fetchProfile();
-  }, [user]);
+  }, []);
 
   const getMembershipInfo = () => {
     if (!profile) return null;

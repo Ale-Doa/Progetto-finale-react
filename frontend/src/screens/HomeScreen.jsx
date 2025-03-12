@@ -1,7 +1,48 @@
+import { useState, useEffect } from 'react';
+import { getAnnouncements } from '../services/api';
+
 const HomeScreen = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      setLoading(true);
+      try {
+        const data = await getAnnouncements();
+        setAnnouncements(data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch announcements');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+
   return (
     <div className="home-screen">
       <h1>Welcome to Our Gym</h1>
+      
+      {/* Announcements Section */}
+      {error && <div className="error">{error}</div>}
+      {loading ? (
+        <div>Loading announcements...</div>
+      ) : announcements.length > 0 ? (
+        <div className="announcements-container">
+          <h2>Announcements</h2>
+          {announcements.map((announcement) => (
+            <div key={announcement._id} className="announcement">
+              <h3>{announcement.title}</h3>
+              <p>{announcement.content}</p>
+              <small>Posted on: {new Date(announcement.createdAt).toLocaleDateString()}</small>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      
       <p>
         Join our premium membership to access booking features and reserve your spot in our gym sessions.
       </p>
