@@ -27,7 +27,9 @@ const AdminScreen = () => {
     setLoading(true);
     try {
       const data = await getAllUsers();
-      setUsers(data);
+      // Filtra gli utenti per escludere quelli con membershipType 'admin'
+      const filteredUsers = data.filter(user => user.membershipType !== 'admin');
+      setUsers(filteredUsers);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch users');
     } finally {
