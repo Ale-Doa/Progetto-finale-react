@@ -9,7 +9,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: var(--text-light);
+  color: var(--text-light); /* Modificato da var(--dark) a var(--text-light) */
 }
 
 .form-group input,
@@ -21,6 +21,12 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius);
   transition: var(--transition);
+}
+
+/* Aggiunto stile specifico per le opzioni dei menu a tendina */
+.form-group select option {
+  background-color: var(--dark);
+  color: var(--text-light);
 }
 
 .form-group input:focus,
