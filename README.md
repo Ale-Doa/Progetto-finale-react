@@ -19,12 +19,21 @@ Un'applicazione web moderna per la gestione degli abbonamenti e delle prenotazio
   - Verifica della disponibilità in tempo reale
   - Gestione delle prenotazioni per gli utenti
   - Funzionalità di cancellazione
+  - Limite di 15 prenotazioni per fascia oraria
+  - Visualizzazione dei posti rimanenti
 
 - **Pannello di Amministrazione**
   - Gestione utenti
   - Modifica degli abbonamenti
   - Gestione delle date di inizio
   - Panoramica utenti con informazioni dettagliate
+  - Creazione e gestione di annunci
+
+- **Sistema di Comunicazioni**
+  - Annunci pubblicati dall'amministratore
+  - Visualizzazione degli annunci attivi nella home page
+  - Possibilità di attivare/disattivare annunci
+  - Interfaccia di gestione annunci per l'amministratore
 
 ## Stack Tecnologico
 
