@@ -27,7 +27,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://progetto-finale-react.netlify.app'],
+  origin: ['http://localhost:5173', 'https://my-gym-app-react.netlify.app'],
   credentials: true
 }));
 app.use(express.json());
