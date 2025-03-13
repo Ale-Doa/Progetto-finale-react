@@ -3,20 +3,22 @@
 /* Alerts */
 .error {
   color: var(--error);
-  margin-bottom: 15px;
-  padding: 12px;
+  margin: 15px 0;
+  padding: 15px;
   background-color: rgba(244, 67, 54, 0.1);
   border-radius: var(--border-radius);
   border-left: 4px solid var(--error);
+  line-height: 1.5;
 }
 
 .success {
   color: var(--accent);
-  margin-bottom: 15px;
-  padding: 12px;
+  margin: 15px 0;
+  padding: 15px;
   background-color: rgba(50, 205, 50, 0.1);
   border-radius: var(--border-radius);
   border-left: 4px solid var(--accent);
+  line-height: 1.5;
 }
 
 /* Tables */
