@@ -3,7 +3,7 @@ import axios from 'axios';
 // The issue is that the API URL needs to be explicitly set for production
 const API_URL = import.meta.env.MODE === 'production' 
   ? 'https://progetto-finale-react.onrender.com/api'
-  : 'http://localhost:5000/api';
+  : 'http://localhost:5001/api';  // Modificato da 5000 a 5001
 
 // Create axios instance
 const api = axios.create({
