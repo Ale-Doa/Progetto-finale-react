@@ -80,6 +80,14 @@ const AdminScreen = () => {
     } else {
       setMembershipStartDate('');
     }
+    
+    // Aggiungi scroll automatico alla sezione di modifica
+    setTimeout(() => {
+      const editSection = document.querySelector('.edit-user');
+      if (editSection) {
+        editSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleCancel = () => {
