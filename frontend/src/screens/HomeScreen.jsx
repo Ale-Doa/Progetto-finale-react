@@ -69,33 +69,32 @@ const HomeScreen = () => {
         <div className="plans-container">
           <div className="plan">
             <h3>Basic</h3>
-            <p>Access to gym facilities during non-peak hours</p>
-            <p>No booking required</p>
+            <p>Possibilità di accesso alla reception</p>
+            <p>Nessuna prenotazione richiesta</p>
           </div>
           <div className="plan">
-            <h3>Premium 1 Month</h3>
-            <p>Full access to gym facilities</p>
-            <p>Booking system access</p>
-            <p>1 month duration</p>
+            <h3>Premium 1 Mese</h3>
+            <p>Pieno accesso alla palestra </p>
+            <p>Accesso al sistema di prenotazione</p>
+            <p><strong>Costo: 55€</strong></p>
           </div>
           <div className="plan">
-            <h3>Premium 3 Months</h3>
-            <p>Full access to gym facilities</p>
-            <p>Booking system access</p>
-            <p>3 months duration</p>
+            <h3>Premium 3 mesi</h3>
+            <p>Pieno accesso alla palestra </p>
+            <p>Accesso al sistema di prenotazione</p>
+            <p><strong>Costo: 150€</strong></p>
           </div>
           <div className="plan">
-            <h3>Premium 6 Months</h3>
-            <p>Full access to gym facilities</p>
-            <p>Booking system access</p>
-            <p>6 months duration</p>
+            <h3>Premium 6 mesi</h3>
+            <p>Pieno accesso alla palestra </p>
+            <p>Accesso al sistema di prenotazione</p>
+            <p><strong>Costo: 280€</strong></p>
           </div>
           <div className="plan">
-            <h3>Premium 12 Months</h3>
-            <p>Full access to gym facilities</p>
-            <p>Booking system access</p>
-            <p>12 months duration</p>
-            <p>Best value!</p>
+            <h3>Premium 12 mesi</h3>
+            <p>Pieno accesso alla palestra </p>
+            <p>Accesso al sistema di prenotazione</p>
+            <p><strong>Costo: 540€</strong></p>
           </div>
         </div>
       </div>
