@@ -6,6 +6,62 @@
   padding: 20px;
 }
 
+/* Aggiunti stili per la sezione info palestra */
+.gym-info {
+  margin: 40px auto;
+  max-width: 800px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid var(--accent);
+}
+
+.info-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.location-info, .hours-info {
+  flex: 1;
+  min-width: 250px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.location-info:hover, .hours-info:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.hours-info ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.hours-info li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hours-info li:last-child {
+  border-bottom: none;
+}
+
+.location-info h3, .hours-info h3 {
+  color: var(--accent);
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
 .plans-container {
   display: flex;
   flex-wrap: wrap;
@@ -43,4 +99,34 @@
   font-weight: bold;
   margin-bottom: 5px;
   color: var(--accent);
+}
+
+/* Stile per il paragrafo promozionale */
+.home-screen > p {
+  margin: 30px auto;
+  max-width: 700px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding: 15px;
+  background-color: rgba(50, 205, 50, 0.1);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--accent);
+}
+
+/* Stile per il titolo della sezione membership */
+.membership-plans h2 {
+  margin-top: 40px;
+  position: relative;
+  display: inline-block;
+}
+
+.membership-plans h2:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: var(--accent);
 }

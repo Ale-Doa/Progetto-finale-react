@@ -6,18 +6,17 @@ const ProfileScreen = ({ setUser }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // Removed unused state variable: showConfirmation
   
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Always fetch the latest profile data from the API
+        // Recupera sempre i dati più recenti del profilo dall'API
         const data = await getUserProfile();
         setProfile(data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load profile');
+        setError(err.response?.data?.message || 'Impossibile caricare il profilo');
       } finally {
         setLoading(false);
       }
@@ -47,17 +46,17 @@ const ProfileScreen = ({ setUser }) => {
         endDate.setMonth(endDate.getMonth() + 12);
         break;
       case 'admin':
-        return 'Admin account';
+        return 'Account amministratore';
       default:
-        return 'Basic membership (no expiration)';
+        return 'Abbonamento base (nessuna scadenza)';
     }
 
-    return `${membershipType} (Valid until: ${endDate.toLocaleDateString()})`;
+    return `${membershipType} (Valido fino al: ${endDate.toLocaleDateString()})`;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Caricamento in corso...</div>;
   if (error) return <div className="error">{error}</div>;
-  if (!profile) return <div>No profile data available</div>;
+  if (!profile) return <div>Nessun dato del profilo disponibile</div>;
 
   const handleDeleteAccount = async () => {
     if (window.confirm('Sei sicuro di voler eliminare il tuo account? Questa azione non può essere annullata.')) {
@@ -80,10 +79,10 @@ const ProfileScreen = ({ setUser }) => {
 
   return (
     <div className="profile-screen">
-      <h1>My Profile</h1>
+      <h1>Il Mio Profilo</h1>
       <div className="profile-info">
         <div className="info-group">
-          <label>Name:</label>
+          <label>Nome:</label>
           <p>{profile.name}</p>
         </div>
         <div className="info-group">
@@ -91,13 +90,12 @@ const ProfileScreen = ({ setUser }) => {
           <p>{profile.email}</p>
         </div>
         <div className="info-group">
-          <label>Membership:</label>
+          <label>Abbonamento:</label>
           <p>{getMembershipInfo()}</p>
         </div>
         
-        {/* Aggiungi alla fine della profile-info */}
         <div className="delete-account-section">
-          <h3>Danger Zone</h3>
+          <h3>Area Pericolosa</h3>
           <p>Una volta eliminato il tuo account, non sarà possibile recuperarlo.</p>
           <button 
             className="delete-account-btn" 

@@ -23,7 +23,7 @@ const BookingScreen = () => {
       const data = await getUserBookings();
       setBookings(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch bookings');
+      setError(err.response?.data?.message || 'Impossibile recuperare le prenotazioni');
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ const BookingScreen = () => {
 
   const checkAvailability = async () => {
     if (!date) {
-      setError('Please select a date');
+      setError('Seleziona una data');
       return;
     }
 
@@ -41,9 +41,9 @@ const BookingScreen = () => {
     try {
       const data = await getBookingsByDate(date);
       setAvailableSlots(data);
-      setTimeSlot(''); // Reset time slot when checking new availability
+      setTimeSlot(''); // Resetta la fascia oraria quando si controlla una nuova disponibilità
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to check availability');
+      setError(err.response?.data?.message || 'Impossibile verificare la disponibilità');
       setAvailableSlots([]);
     } finally {
       setLoading(false);
@@ -54,7 +54,7 @@ const BookingScreen = () => {
     e.preventDefault();
     
     if (!date || !timeSlot) {
-      setError('Please select both date and time slot');
+      setError('Seleziona sia la data che la fascia oraria');
       return;
     }
 
@@ -64,58 +64,56 @@ const BookingScreen = () => {
     
     try {
       await createBooking({ date, timeSlot });
-      setSuccess('Booking created successfully!');
+      setSuccess('Prenotazione creata con successo!');
       fetchUserBookings();
       setDate('');
       setTimeSlot('');
       setAvailableSlots([]);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create booking');
+      setError(err.response?.data?.message || 'Impossibile creare la prenotazione');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancelBooking = async (id) => {
-    if (window.confirm('Are you sure you want to cancel this booking?')) {
+    if (window.confirm('Sei sicuro di voler cancellare questa prenotazione?')) {
       setLoading(true);
       setError('');
       setSuccess('');
       
       try {
-        // Aggiungiamo un log per verificare l'ID della prenotazione
-        console.log('Cancelling booking with ID:', id);
         await deleteBooking(id);
-        setSuccess('Booking cancelled successfully!');
+        setSuccess('Prenotazione cancellata con successo!');
         // Aggiorniamo la lista delle prenotazioni dopo la cancellazione
         fetchUserBookings();
       } catch (err) {
-        console.error('Error cancelling booking:', err);
-        setError(err.response?.data?.message || 'Failed to cancel booking');
+        console.error('Errore durante la cancellazione della prenotazione:', err);
+        setError(err.response?.data?.message || 'Impossibile cancellare la prenotazione');
       } finally {
         setLoading(false);
       }
     }
   };
 
-  // Format date for display
+  // Formatta la data per la visualizzazione
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString('it-IT', options);
   };
 
   return (
     <div className="booking-screen">
-      <h1>Gym Bookings</h1>
+      <h1>Prenotazioni Palestra</h1>
       
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}
       
       <div className="booking-form">
-        <h2>Make a New Booking</h2>
+        <h2>Effettua una Nuova Prenotazione</h2>
         <form onSubmit={handleBooking}>
           <div className="form-group">
-            <label htmlFor="date">Date</label>
+            <label htmlFor="date">Data</label>
             <input
               type="date"
               id="date"
@@ -127,24 +125,24 @@ const BookingScreen = () => {
           </div>
           
           <button type="button" onClick={checkAvailability} disabled={loading || !date}>
-            Check Availability
+            Verifica Disponibilità
           </button>
           
           {availableSlots.length > 0 && (
             <>
               <div className="form-group">
-                <label htmlFor="timeSlot">Time Slot</label>
+                <label htmlFor="timeSlot">Fascia Oraria</label>
                 <select
                   id="timeSlot"
                   value={timeSlot}
                   onChange={(e) => setTimeSlot(e.target.value)}
                   required
                 >
-                  <option value="">Select a time slot</option>
+                  <option value="">Seleziona una fascia oraria</option>
                   {availableSlots.map((slot) => (
                     !slot.isBooked && (
                       <option key={slot.timeSlot} value={slot.timeSlot}>
-                        {slot.timeSlot} - {MAX_BOOKINGS_PER_SLOT - (slot.bookingsCount || 0)} spots left
+                        {slot.timeSlot} - {MAX_BOOKINGS_PER_SLOT - (slot.bookingsCount || 0)} posti disponibili
                       </option>
                     )
                   ))}
@@ -152,7 +150,7 @@ const BookingScreen = () => {
               </div>
               
               <button type="submit" disabled={loading || !timeSlot}>
-                {loading ? 'Loading...' : 'Book Now'}
+                {loading ? 'Caricamento...' : 'Prenota Ora'}
               </button>
             </>
           )}
@@ -160,24 +158,25 @@ const BookingScreen = () => {
       </div>
       
       <div className="my-bookings">
-        <h2>My Bookings</h2>
-        {loading && <div>Loading...</div>}
+        <h2>Le Mie Prenotazioni</h2>
+        {loading && <div>Caricamento in corso...</div>}
         {bookings.length === 0 ? (
-          <p>You have no bookings.</p>
+          <p>Non hai prenotazioni.</p>
         ) : (
           <ul className="bookings-list">
             {bookings.map((booking) => (
               <li key={booking._id} className="booking-item">
-                <div className="booking-info">
-                  <p className="booking-date">{formatDate(booking.date)}</p>
-                  <p className="booking-time">Time: {booking.timeSlot}</p>
+                <div className="booking-details">
+                  <strong>Data:</strong> {formatDate(booking.date)}
+                  <br />
+                  <strong>Orario:</strong> {booking.timeSlot}
                 </div>
                 <button 
+                  className="cancel-btn" 
                   onClick={() => handleCancelBooking(booking._id)}
-                  className="cancel-btn"
                   disabled={loading}
                 >
-                  Cancel
+                  Cancella
                 </button>
               </li>
             ))}

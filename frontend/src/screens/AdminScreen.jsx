@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { getAllUsers, updateUserMembership, getAllAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../services/api';
 
-// Membership types available
+// Tipi di abbonamento disponibili
 const membershipTypes = ['basic', 'premium1', 'premium3', 'premium6', 'premium12', 'admin'];
 
-// Function to calculate expiration date based on membership type
+// Funzione per calcolare la data di scadenza in base al tipo di abbonamento
 const calculateExpirationDate = (user) => {
   if (!user.membershipStartDate || user.membershipType === 'basic') {
     return 'N/A';
@@ -14,13 +14,13 @@ const calculateExpirationDate = (user) => {
   let expirationDate = new Date(startDate);
   
   if (user.membershipType === 'premium1') {
-    expirationDate.setMonth(startDate.getMonth() + 1); // 1 month
+    expirationDate.setMonth(startDate.getMonth() + 1); // 1 mese
   } else if (user.membershipType === 'premium3') {
-    expirationDate.setMonth(startDate.getMonth() + 3); // 3 months
+    expirationDate.setMonth(startDate.getMonth() + 3); // 3 mesi
   } else if (user.membershipType === 'premium6') {
-    expirationDate.setMonth(startDate.getMonth() + 6); // 6 months
+    expirationDate.setMonth(startDate.getMonth() + 6); // 6 mesi
   } else if (user.membershipType === 'premium12') {
-    expirationDate.setMonth(startDate.getMonth() + 12); // 12 months
+    expirationDate.setMonth(startDate.getMonth() + 12); // 12 mesi
   }
   
   return expirationDate.toLocaleDateString();
@@ -52,7 +52,7 @@ const AdminScreen = () => {
       const filteredUsers = data.filter(user => user.membershipType !== 'admin');
       setUsers(filteredUsers);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch users');
+      setError(err.response?.data?.message || 'Impossibile recuperare gli utenti');
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ const AdminScreen = () => {
       const data = await getAllAnnouncements();
       setAnnouncements(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch announcements');
+      setError(err.response?.data?.message || 'Impossibile recuperare gli annunci');
     } finally {
       setLoading(false);
     }
@@ -73,27 +73,13 @@ const AdminScreen = () => {
   const handleEdit = (user) => {
     setEditingUser(user);
     setMembershipType(user.membershipType);
-    // Format the date for the input field (YYYY-MM-DD)
+    // Formatta la data per il campo input (YYYY-MM-DD)
     if (user.membershipStartDate) {
       const date = new Date(user.membershipStartDate);
       setMembershipStartDate(date.toISOString().split('T')[0]);
     } else {
       setMembershipStartDate('');
     }
-    
-    // Aggiungi scroll automatico alla sezione di modifica
-    setTimeout(() => {
-      const editSection = document.querySelector('.edit-user');
-      if (editSection) {
-        editSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-
-  const handleCancel = () => {
-    setEditingUser(null);
-    setMembershipType('');
-    setMembershipStartDate('');
   };
 
   const handleUpdate = async () => {
@@ -102,48 +88,39 @@ const AdminScreen = () => {
     setSuccess('');
     
     try {
-      await updateUserMembership(editingUser._id, { 
+      await updateUserMembership(editingUser._id, {
         membershipType,
-        membershipStartDate: membershipStartDate || undefined
+        membershipStartDate: membershipStartDate || new Date().toISOString()
       });
-      setSuccess(`Membership updated for ${editingUser.name}`);
+      setSuccess('Abbonamento utente aggiornato con successo!');
       fetchUsers();
       setEditingUser(null);
-      setMembershipStartDate('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update membership');
+      setError(err.response?.data?.message || 'Impossibile aggiornare l\'abbonamento');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAnnouncementSubmit = async (e) => {
+  const handleCancel = () => {
+    setEditingUser(null);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleCreateAnnouncement = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setSuccess('');
-
+    
     try {
-      if (editingAnnouncement) {
-        await updateAnnouncement(editingAnnouncement._id, {
-          title: newAnnouncement.title,
-          content: newAnnouncement.content,
-          isActive: newAnnouncement.isActive,
-        });
-        setSuccess('Announcement updated successfully!');
-      } else {
-        await createAnnouncement({
-          title: newAnnouncement.title,
-          content: newAnnouncement.content,
-        });
-        setSuccess('Announcement created successfully!');
-      }
-      
-      setNewAnnouncement({ title: '', content: '' });
-      setEditingAnnouncement(null);
+      await createAnnouncement(newAnnouncement);
+      setSuccess('Annuncio creato con successo!');
       fetchAnnouncements();
+      setNewAnnouncement({ title: '', content: '' });
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save announcement');
+      setError(err.response?.data?.message || 'Impossibile creare l\'annuncio');
     } finally {
       setLoading(false);
     }
@@ -151,36 +128,37 @@ const AdminScreen = () => {
 
   const handleEditAnnouncement = (announcement) => {
     setEditingAnnouncement(announcement);
-    setNewAnnouncement({
-      title: announcement.title,
-      content: announcement.content,
-      isActive: announcement.isActive,
-    });
   };
 
-  const handleToggleAnnouncementStatus = async (announcement) => {
+  const handleUpdateAnnouncement = async () => {
     setLoading(true);
+    setError('');
+    setSuccess('');
+    
     try {
-      await updateAnnouncement(announcement._id, {
-        isActive: !announcement.isActive,
-      });
+      await updateAnnouncement(editingAnnouncement._id, editingAnnouncement);
+      setSuccess('Annuncio aggiornato con successo!');
       fetchAnnouncements();
+      setEditingAnnouncement(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update announcement status');
+      setError(err.response?.data?.message || 'Impossibile aggiornare l\'annuncio');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteAnnouncement = async (id) => {
-    if (window.confirm('Are you sure you want to delete this announcement?')) {
+    if (window.confirm('Sei sicuro di voler eliminare questo annuncio?')) {
       setLoading(true);
+      setError('');
+      setSuccess('');
+      
       try {
         await deleteAnnouncement(id);
-        setSuccess('Announcement deleted successfully!');
+        setSuccess('Annuncio eliminato con successo!');
         fetchAnnouncements();
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete announcement');
+        setError(err.response?.data?.message || 'Impossibile eliminare l\'annuncio');
       } finally {
         setLoading(false);
       }
@@ -189,7 +167,7 @@ const AdminScreen = () => {
 
   return (
     <div className="admin-screen">
-      <h1>Admin Dashboard</h1>
+      <h1>Pannello di Amministrazione</h1>
       
       {error && <div className="error">{error}</div>}
       {success && <div className="success">{success}</div>}
@@ -199,72 +177,76 @@ const AdminScreen = () => {
           className={activeTab === 'users' ? 'active' : ''} 
           onClick={() => setActiveTab('users')}
         >
-          Manage Users
+          Gestione Utenti
         </button>
         <button 
           className={activeTab === 'announcements' ? 'active' : ''} 
           onClick={() => setActiveTab('announcements')}
         >
-          Manage Announcements
+          Gestione Annunci
         </button>
       </div>
       
-      {activeTab === 'users' ? (
-        <>
-          <div className="users-list">
-            <h2>All Users</h2>
-            {loading && <div>Loading...</div>}
-            {users.length === 0 ? (
-              <p>No users found.</p>
-            ) : (
-              <table className="users-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Membership</th>
-                    <th>Start Date</th>
-                    <th>Expiration Date</th>
-                    <th>Actions</th>
+      {activeTab === 'users' && (
+        <div className="users-management">
+          <h2>Gestione Utenti</h2>
+          
+          {loading && !editingUser ? (
+            <div>Caricamento in corso...</div>
+          ) : (
+            <table className="users-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th>Abbonamento</th>
+                  <th>Data Inizio</th>
+                  <th>Scadenza</th>
+                  <th>Azioni</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user._id}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.membershipType}</td>
+                    <td>{user.membershipStartDate ? new Date(user.membershipStartDate).toLocaleDateString() : 'N/A'}</td>
+                    <td>{calculateExpirationDate(user)}</td>
+                    <td>
+                      <button onClick={() => handleEdit(user)}>Modifica</button>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user._id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.membershipType}</td>
-                      <td>{user.membershipStartDate ? new Date(user.membershipStartDate).toLocaleDateString() : 'N/A'}</td>
-                      <td>{calculateExpirationDate(user)}</td>
-                      <td>
-                        <button onClick={() => handleEdit(user)}>Edit</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+                ))}
+              </tbody>
+            </table>
+          )}
           
           {editingUser && (
             <div className="edit-user">
-              <h2>Edit User: {editingUser.name}</h2>
+              <h3>Modifica Abbonamento Utente</h3>
               <div className="form-group">
-                <label htmlFor="membershipType">Membership Type</label>
+                <label>Nome:</label>
+                <p>{editingUser.name}</p>
+              </div>
+              <div className="form-group">
+                <label>Email:</label>
+                <p>{editingUser.email}</p>
+              </div>
+              <div className="form-group">
+                <label htmlFor="membershipType">Tipo di Abbonamento:</label>
                 <select
                   id="membershipType"
                   value={membershipType}
                   onChange={(e) => setMembershipType(e.target.value)}
                 >
-                  {membershipTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
+                  {membershipTypes.filter(type => type !== 'admin').map((type) => (
+                    <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="membershipStartDate">Start Date</label>
+                <label htmlFor="membershipStartDate">Data di Inizio:</label>
                 <input
                   type="date"
                   id="membershipStartDate"
@@ -272,106 +254,115 @@ const AdminScreen = () => {
                   onChange={(e) => setMembershipStartDate(e.target.value)}
                 />
               </div>
-              <div className="form-actions">
+              <div className="button-group">
                 <button onClick={handleUpdate} disabled={loading}>
-                  {loading ? 'Updating...' : 'Update Membership'}
+                  {loading ? 'Aggiornamento...' : 'Aggiorna'}
                 </button>
-                <button onClick={handleCancel} disabled={loading}>
-                  Cancel
-                </button>
+                <button onClick={handleCancel} disabled={loading}>Annulla</button>
               </div>
             </div>
           )}
-        </>
-      ) : (
+        </div>
+      )}
+      
+      {activeTab === 'announcements' && (
         <div className="announcements-management">
-          <div className="announcement-form-container">
-            <h2>{editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}</h2>
-            <form onSubmit={handleAnnouncementSubmit} className="announcement-form">
+          <h2>Gestione Annunci</h2>
+          
+          <div className="create-announcement">
+            <h3>Crea Nuovo Annuncio</h3>
+            <form onSubmit={handleCreateAnnouncement}>
               <div className="form-group">
-                <label htmlFor="title">Title</label>
+                <label htmlFor="title">Titolo:</label>
                 <input
                   type="text"
                   id="title"
                   value={newAnnouncement.title}
                   onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
                   required
-                  placeholder="Enter announcement title"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="content">Content</label>
+                <label htmlFor="content">Contenuto:</label>
                 <textarea
                   id="content"
                   value={newAnnouncement.content}
                   onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
                   required
-                  rows="4"
-                  placeholder="Enter announcement content"
-                ></textarea>
+                />
               </div>
-              {editingAnnouncement && (
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={newAnnouncement.isActive}
-                      onChange={(e) => setNewAnnouncement({...newAnnouncement, isActive: e.target.checked})}
-                    />
-                    <span>Active</span>
-                  </label>
-                </div>
-              )}
-              <div className="form-actions">
-                <button type="submit" disabled={loading} className="primary-button">
-                  {loading ? 'Saving...' : editingAnnouncement ? 'Update Announcement' : 'Create Announcement'}
-                </button>
-                {editingAnnouncement && (
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setEditingAnnouncement(null);
-                      setNewAnnouncement({ title: '', content: '' });
-                    }}
-                    className="secondary-button"
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
+              <button type="submit" disabled={loading}>
+                {loading ? 'Creazione...' : 'Crea Annuncio'}
+              </button>
             </form>
           </div>
           
-          <h2>All Announcements</h2>
-          {loading && <div className="loading">Loading...</div>}
-          {announcements.length === 0 ? (
-            <p className="no-data">No announcements found.</p>
-          ) : (
-            <div className="announcements-list">
-              {announcements.map((announcement) => (
-                <div key={announcement._id} className={`announcement-item ${!announcement.isActive ? 'inactive' : ''}`}>
-                  <div className="announcement-header">
-                    <h3>{announcement.title}</h3>
-                    <div className="announcement-status">
-                      {announcement.isActive ? 'Active' : 'Inactive'}
-                    </div>
+          <div className="announcements-list">
+            <h3>Annunci Esistenti</h3>
+            {loading && !editingAnnouncement ? (
+              <div>Caricamento in corso...</div>
+            ) : announcements.length === 0 ? (
+              <p>Nessun annuncio disponibile.</p>
+            ) : (
+              <div className="announcements-grid">
+                {announcements.map((announcement) => (
+                  <div key={announcement._id} className="announcement-item">
+                    {editingAnnouncement && editingAnnouncement._id === announcement._id ? (
+                      <div className="edit-announcement">
+                        <div className="form-group">
+                          <label htmlFor="edit-title">Titolo:</label>
+                          <input
+                            type="text"
+                            id="edit-title"
+                            value={editingAnnouncement.title}
+                            onChange={(e) => setEditingAnnouncement({
+                              ...editingAnnouncement,
+                              title: e.target.value
+                            })}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor="edit-content">Contenuto:</label>
+                          <textarea
+                            id="edit-content"
+                            value={editingAnnouncement.content}
+                            onChange={(e) => setEditingAnnouncement({
+                              ...editingAnnouncement,
+                              content: e.target.value
+                            })}
+                            required
+                          />
+                        </div>
+                        <div className="button-group">
+                          <button onClick={handleUpdateAnnouncement} disabled={loading}>
+                            {loading ? 'Aggiornamento...' : 'Aggiorna'}
+                          </button>
+                          <button onClick={() => setEditingAnnouncement(null)} disabled={loading}>
+                            Annulla
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <h4>{announcement.title}</h4>
+                        <p>{announcement.content}</p>
+                        <small>Pubblicato il: {new Date(announcement.createdAt).toLocaleDateString()}</small>
+                        <div className="announcement-actions">
+                          <button onClick={() => handleEditAnnouncement(announcement)}>
+                            Modifica
+                          </button>
+                          <button className='cancel-btn' onClick={() => handleDeleteAnnouncement(announcement._id)}>
+                            Elimina
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <p>{announcement.content}</p>
-                  <div className="announcement-meta">
-                    <small>Created by: {announcement.createdBy.name}</small>
-                    <small>Date: {new Date(announcement.createdAt).toLocaleDateString()}</small>
-                  </div>
-                  <div className="announcement-actions">
-                    <button onClick={() => handleEditAnnouncement(announcement)}>Edit</button>
-                    <button onClick={() => handleToggleAnnouncementStatus(announcement)}>
-                      {announcement.isActive ? 'Deactivate' : 'Activate'}
-                    </button>
-                    <button onClick={() => handleDeleteAnnouncement(announcement._id)}>Delete</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

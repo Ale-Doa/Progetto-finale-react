@@ -83,6 +83,7 @@
 
 .cancel-btn {
   background-color: var(--error);
+  color: white; /* Aggiunto per migliorare la leggibilità */
 }
 
 /* Announcements */

@@ -63,3 +63,10 @@ nav {
 .nav-links button:hover {
   color: var(--accent);
 }
+
+.profile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}

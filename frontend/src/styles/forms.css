@@ -9,7 +9,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: var(--text-light); /* Modificato da var(--dark) a var(--text-light) */
+  color: var(--accent); /* Modificato da var(--dark) a var(--text-light) */
 }
 
 .form-group input,
@@ -39,7 +39,7 @@
 /* Buttons */
 button {
   background-color: var(--accent);
-  color: white;
+  color: var(--dark);
   border: none;
   padding: 12px 20px;
   border-radius: var(--border-radius);

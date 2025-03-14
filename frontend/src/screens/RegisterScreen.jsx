@@ -16,7 +16,7 @@ const RegisterScreen = ({ setUser }) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Le password non corrispondono');
       return;
     }
     
@@ -29,7 +29,7 @@ const RegisterScreen = ({ setUser }) => {
       setUser(data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during registration');
+      setError(err.response?.data?.message || 'Si è verificato un errore durante la registrazione');
     } finally {
       setLoading(false);
     }
@@ -37,26 +37,26 @@ const RegisterScreen = ({ setUser }) => {
 
   return (
     <div className="register-screen">
-      <h1>Sign Up</h1>
+      <h1>Registrati</h1>
       {error && <div className="error">{error}</div>}
       <form onSubmit={submitHandler}>
         <div className="form-group">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Nome</label>
           <input
             type="text"
             id="name"
-            placeholder="Enter name"
+            placeholder="Inserisci nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="email">Email Address</label>
+          <label htmlFor="email">Indirizzo Email</label>
           <input
             type="email"
             id="email"
-            placeholder="Enter email"
+            placeholder="Inserisci email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -67,25 +67,25 @@ const RegisterScreen = ({ setUser }) => {
           <input
             type="password"
             id="password"
-            placeholder="Enter password"
+            placeholder="Inserisci password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label htmlFor="confirmPassword">Confirm Password</label>
+          <label htmlFor="confirmPassword">Conferma Password</label>
           <input
             type="password"
             id="confirmPassword"
-            placeholder="Confirm password"
+            placeholder="Conferma password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
         </div>
         <button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Register'}
+          {loading ? 'Caricamento...' : 'Registrati'}
         </button>
       </form>
     </div>

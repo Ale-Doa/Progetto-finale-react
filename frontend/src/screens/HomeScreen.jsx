@@ -24,7 +24,7 @@ const HomeScreen = () => {
 
   return (
     <div className="home-screen">
-      <h1>Welcome to Our Gym</h1>
+      <h1>La nostra palestra</h1>
       
       {/* Announcements Section */}
       {error && <div className="error">{error}</div>}
@@ -45,9 +45,25 @@ const HomeScreen = () => {
         </div>
       ) : null}
       
-      <p>
-        Join our premium membership to access booking features and reserve your spot in our gym sessions.
-      </p>
+      {/* Informazioni sulla palestra */}
+      <div className="gym-info">
+        <div className="info-container">
+          <div className="location-info">
+            <h3>Dove Siamo</h3>
+            <p>Via Manzoni 45, Cologno Monzese (MI)</p>
+            <p>A soli 5 minuti dalla fermata della metropolitana</p>
+          </div>
+          <div className="hours-info">
+            <h3>Orari di Apertura</h3>
+            <ul>
+              <li><strong>Lunedì - Venerdì:</strong> 06:00 - 23:00</li>
+              <li><strong>Sabato:</strong> 08:00 - 20:00</li>
+              <li><strong>Domenica:</strong> 09:00 - 18:00</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
       <div className="membership-plans">
         <h2>Membership Plans</h2>
         <div className="plans-container">

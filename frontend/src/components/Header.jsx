@@ -19,7 +19,9 @@ const Header = ({ user, setUser }) => {
           {user ? (
             <>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link to="/profile">
+                  <img src="/assets/userImg.png" alt="Profile" className="profile-icon" />
+                </Link>
               </li>
               {['premium1', 'premium3', 'premium6', 'premium12'].includes(user.membershipType) && (
                 <li>

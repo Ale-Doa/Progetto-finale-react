@@ -21,7 +21,7 @@ const LoginScreen = ({ setUser }) => {
       setUser(data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      setError(err.response?.data?.message || 'Si è verificato un errore durante il login');
     } finally {
       setLoading(false);
     }
@@ -29,15 +29,15 @@ const LoginScreen = ({ setUser }) => {
 
   return (
     <div className="login-screen">
-      <h1>Sign In</h1>
+      <h1>Accedi</h1>
       {error && <div className="error">{error}</div>}
       <form onSubmit={submitHandler}>
         <div className="form-group">
-          <label htmlFor="email">Email Address</label>
+          <label htmlFor="email">Indirizzo Email</label>
           <input
             type="email"
             id="email"
-            placeholder="Enter email"
+            placeholder="Inserisci email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -48,14 +48,14 @@ const LoginScreen = ({ setUser }) => {
           <input
             type="password"
             id="password"
-            placeholder="Enter password"
+            placeholder="Inserisci password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         <button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Sign In'}
+          {loading ? 'Caricamento...' : 'Accedi'}
         </button>
       </form>
     </div>
