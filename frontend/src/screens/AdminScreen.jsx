@@ -2,21 +2,25 @@ import { useState, useEffect } from 'react';
 import { getAllUsers, updateUserMembership, getAllAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../services/api';
 
 // Membership types available
-const membershipTypes = ['free', 'basic', 'premium'];
+const membershipTypes = ['basic', 'premium1', 'premium3', 'premium6', 'premium12', 'admin'];
 
 // Function to calculate expiration date based on membership type
 const calculateExpirationDate = (user) => {
-  if (!user.membershipStartDate || user.membershipType === 'free') {
+  if (!user.membershipStartDate || user.membershipType === 'basic') {
     return 'N/A';
   }
   
   const startDate = new Date(user.membershipStartDate);
   let expirationDate = new Date(startDate);
   
-  if (user.membershipType === 'basic') {
+  if (user.membershipType === 'premium1') {
     expirationDate.setMonth(startDate.getMonth() + 1); // 1 month
-  } else if (user.membershipType === 'premium') {
+  } else if (user.membershipType === 'premium3') {
     expirationDate.setMonth(startDate.getMonth() + 3); // 3 months
+  } else if (user.membershipType === 'premium6') {
+    expirationDate.setMonth(startDate.getMonth() + 6); // 6 months
+  } else if (user.membershipType === 'premium12') {
+    expirationDate.setMonth(startDate.getMonth() + 12); // 12 months
   }
   
   return expirationDate.toLocaleDateString();
