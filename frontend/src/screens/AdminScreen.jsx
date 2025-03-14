@@ -6,7 +6,7 @@ import {
   createAnnouncement, 
   updateAnnouncement, 
   deleteAnnouncement, 
-  getAllBookings // Add this import
+  getAllBookings // Questa importazione è corretta
 } from '../services/api';
 
 // Tipi di abbonamento disponibili

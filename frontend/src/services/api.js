@@ -138,8 +138,6 @@ export const deleteUserAccount = async () => {
   return response.data;
 };
 
-// Add this function to the existing api.js file
-
 export const getAllBookings = async () => {
   const response = await api.get('/bookings/all');
   return response.data;
