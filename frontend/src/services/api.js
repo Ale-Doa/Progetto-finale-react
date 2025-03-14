@@ -132,3 +132,8 @@ export const deleteAnnouncement = async (id) => {
   const response = await api.delete(`/announcements/${id}`);
   return response.data;
 };
+
+export const deleteUserAccount = async () => {
+  const response = await api.delete('/users/profile');
+  return response.data;
+};

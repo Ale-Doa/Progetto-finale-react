@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const Booking = require('../models/bookingModel'); // Aggiungi questa importazione
 
 // Generate JWT
 const generateToken = (id) => {
@@ -136,10 +137,35 @@ const updateUserMembership = async (req, res) => {
   }
 };
 
+// @desc    Delete user account
+// @route   DELETE /api/users/profile
+// @access  Private
+const deleteUserAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
+    }
+
+    // Elimina anche tutte le prenotazioni dell'utente
+    await Booking.deleteMany({ user: req.user._id });
+    
+    // Elimina l'utente
+    await User.findByIdAndDelete(req.user._id);
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
   getUsers,
   updateUserMembership,
+  deleteUserAccount, // Aggiungi questa esportazione
 };
