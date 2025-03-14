@@ -203,3 +203,127 @@
 .announcement-actions button:nth-child(3) {
   background-color: var(--error);
 }
+
+
+/* Admin Bookings Management */
+.bookings-management {
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bookings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.cleanup-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+}
+
+.cleanup-btn {
+  background-color: var(--error);
+  color: white;
+}
+
+.last-cleanup {
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.filter-section label {
+  font-weight: bold;
+  color: var(--accent);
+  min-width: 100px;
+}
+
+.filter-section input[type="date"] {
+  flex: 1;
+  max-width: 200px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.07);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius);
+}
+
+.reset-filter-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.reset-filter-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bookings-table-container {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.bookings-table th {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--accent);
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 2px solid rgba(50, 205, 50, 0.3);
+}
+
+.bookings-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bookings-table tr:hover {
+  background-color: rgba(50, 205, 50, 0.1);
+  transition: var(--transition);
+}
+
+.loading-spinner {
+  text-align: center;
+  padding: 20px;
+  color: var(--accent);
+  font-style: italic;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-light);
+  font-style: italic;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: var(--border-radius);
+}

@@ -137,3 +137,15 @@ export const deleteUserAccount = async () => {
   const response = await api.delete('/users/profile');
   return response.data;
 };
+
+// Add this function to the existing api.js file
+
+export const getAllBookings = async () => {
+  const response = await api.get('/bookings/all');
+  return response.data;
+};
+
+export const cleanupPastBookings = async () => {
+  const response = await api.delete('/bookings/cleanup');
+  return response.data;
+};

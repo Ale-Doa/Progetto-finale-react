@@ -169,9 +169,48 @@ const getBookingsByDate = async (req, res) => {
   }
 };
 
+// Add this function to the existing bookingController.js file
+
+// @desc    Get all bookings (admin only)
+// @route   GET /api/bookings/all
+// @access  Private/Admin
+const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({})
+      .populate('user', 'name email')
+      .sort({ date: 1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Clean up past bookings
+// @route   DELETE /api/bookings/cleanup
+// @access  Private/Admin
+const cleanupPastBookings = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const result = await Booking.deleteMany({
+      date: { $lt: today }
+    });
+    
+    res.json({ 
+      message: `Pulizia completata: ${result.deletedCount} prenotazioni passate rimosse` 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Don't forget to export the new function
 module.exports = {
   createBooking,
   getUserBookings,
   deleteBooking,
   getBookingsByDate,
+  getAllBookings,
+  cleanupPastBookings
 };

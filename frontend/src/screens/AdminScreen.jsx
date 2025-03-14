@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { getAllUsers, updateUserMembership, getAllAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '../services/api';
+import { 
+  getAllUsers, 
+  updateUserMembership, 
+  getAllAnnouncements, 
+  createAnnouncement, 
+  updateAnnouncement, 
+  deleteAnnouncement, 
+  getAllBookings // Add this import
+} from '../services/api';
 
 // Tipi di abbonamento disponibili
 const membershipTypes = ['basic', 'premium1', 'premium3', 'premium6', 'premium12', 'admin'];
@@ -38,11 +46,21 @@ const AdminScreen = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '' });
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-
+  // Add state for bookings
+  const [allBookings, setAllBookings] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
+  // Remove the lastCleanup state
+  
+  // Update the useEffect to remove the cleanup logic
   useEffect(() => {
     fetchUsers();
     fetchAnnouncements();
-  }, []);
+    
+    if (activeTab === 'bookings') {
+      fetchAllBookings();
+      // Remove the cleanup check and execution
+    }
+  }, [activeTab]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -165,6 +183,33 @@ const AdminScreen = () => {
     }
   };
 
+  // Update the fetchAllBookings function
+  const fetchAllBookings = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllBookings();
+      setAllBookings(data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch bookings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to filter bookings by date
+  const filterBookingsByDate = () => {
+    if (!selectedDate) return allBookings;
+    
+    const filterDate = new Date(selectedDate);
+    filterDate.setHours(0, 0, 0, 0);
+    
+    return allBookings.filter(booking => {
+      const bookingDate = new Date(booking.date);
+      bookingDate.setHours(0, 0, 0, 0);
+      return bookingDate.getTime() === filterDate.getTime();
+    });
+  };
+
   return (
     <div className="admin-screen">
       <h1>Pannello di Amministrazione</h1>
@@ -184,6 +229,12 @@ const AdminScreen = () => {
           onClick={() => setActiveTab('announcements')}
         >
           Gestione Annunci
+        </button>
+        <button 
+          className={activeTab === 'bookings' ? 'active' : ''} 
+          onClick={() => setActiveTab('bookings')}
+        >
+          Gestione Prenotazioni
         </button>
       </div>
       
@@ -360,6 +411,66 @@ const AdminScreen = () => {
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {activeTab === 'bookings' && (
+        <div className="bookings-management">
+          <h2>Gestione Prenotazioni</h2>
+          
+          <div className="bookings-actions">
+            <div className="filter-section">
+              <label htmlFor="date-filter">Filtra per data:</label>
+              <input
+                type="date"
+                id="date-filter"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <button 
+                className="reset-filter-btn"
+                onClick={() => {
+                  setSelectedDate('');
+                  fetchAllBookings();
+                }}
+              >
+                Reimposta Filtro
+              </button>
+            </div>
+            
+            {/* Remove the cleanup section with last cleanup info */}
+            
+            {loading ? (
+              <div className="loading-spinner">Caricamento prenotazioni...</div>
+            ) : (
+              <div className="bookings-table-container">
+                {filterBookingsByDate().length === 0 ? (
+                  <p className="no-data-message">Nessuna prenotazione trovata.</p>
+                ) : (
+                  <table className="bookings-table">
+                    <thead>
+                      <tr>
+                        <th>Utente</th>
+                        <th>Email</th>
+                        <th>Data</th>
+                        <th>Fascia Oraria</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filterBookingsByDate().map((booking) => (
+                        <tr key={booking._id}>
+                          <td>{booking.user?.name || 'N/A'}</td>
+                          <td>{booking.user?.email || 'N/A'}</td>
+                          <td>{new Date(booking.date).toLocaleDateString()}</td>
+                          <td>{booking.timeSlot}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             )}
           </div>

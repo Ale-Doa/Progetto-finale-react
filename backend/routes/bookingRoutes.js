@@ -5,15 +5,18 @@ const {
   getUserBookings,
   deleteBooking,
   getBookingsByDate,
+  getAllBookings
 } = require('../controllers/bookingController');
-const { protect, premium } = require('../middleware/authMiddleware');
+const { protect, premium, admin } = require('../middleware/authMiddleware');
+const { cleanupPastBookings } = require('../middleware/cleanupMiddleware');
 
-// All booking routes are protected
+// Applica il middleware di pulizia a tutte le rotte che recuperano prenotazioni
 router.route('/')
   .post(protect, premium, createBooking)
-  .get(protect, getUserBookings);
+  .get(cleanupPastBookings, protect, getUserBookings);
 
+router.route('/all').get(cleanupPastBookings, protect, admin, getAllBookings);
 router.route('/:id').delete(protect, deleteBooking);
-router.route('/date/:date').get(protect, getBookingsByDate);
+router.route('/date/:date').get(cleanupPastBookings, protect, getBookingsByDate);
 
 module.exports = router;
