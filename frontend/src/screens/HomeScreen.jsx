@@ -55,11 +55,8 @@ const HomeScreen = () => {
           </div>
           <div className="hours-info">
             <h3>Orari di Apertura</h3>
-            <ul>
-              <li><strong>Lunedì - Venerdì:</strong> 06:00 - 23:00</li>
-              <li><strong>Sabato:</strong> 08:00 - 20:00</li>
-              <li><strong>Domenica:</strong> 09:00 - 18:00</li>
-            </ul>
+            <p>Da lunedi a venerdi</p> <br />
+            <p>8.30 - 12.30 / 14.00 - 21.30</p>
           </div>
         </div>
       </div>
