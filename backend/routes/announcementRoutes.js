@@ -9,10 +9,8 @@ const {
 } = require('../controllers/announcementController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Public route to get active announcements
 router.get('/', getAnnouncements);
 
-// Admin routes
 router.post('/', protect, admin, createAnnouncement);
 router.get('/all', protect, admin, getAllAnnouncements);
 router.route('/:id')

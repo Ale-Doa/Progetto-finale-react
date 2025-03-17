@@ -1,17 +1,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const Booking = require('../models/bookingModel'); // Aggiungi questa importazione
+const Booking = require('../models/bookingModel'); 
 
-// Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
 
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -46,9 +42,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// @desc    Auth user & get token
-// @route   POST /api/users/login
-// @access  Public
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -72,9 +65,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// @desc    Get user profile
-// @route   GET /api/users/profile
-// @access  Private
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -96,9 +86,6 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private/Admin
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
@@ -108,9 +95,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-// @desc    Update user membership
-// @route   PUT /api/users/:id
-// @access  Private/Admin
 const updateUserMembership = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -137,9 +121,6 @@ const updateUserMembership = async (req, res) => {
   }
 };
 
-// @desc    Delete user account
-// @route   DELETE /api/users/profile
-// @access  Private
 const deleteUserAccount = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -149,10 +130,8 @@ const deleteUserAccount = async (req, res) => {
       throw new Error('User not found');
     }
 
-    // Elimina anche tutte le prenotazioni dell'utente
     await Booking.deleteMany({ user: req.user._id });
     
-    // Elimina l'utente
     await User.findByIdAndDelete(req.user._id);
 
     res.json({ message: 'Account deleted successfully' });
@@ -167,5 +146,5 @@ module.exports = {
   getUserProfile,
   getUsers,
   updateUserMembership,
-  deleteUserAccount, // Aggiungi questa esportazione
+  deleteUserAccount, 
 };

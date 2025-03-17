@@ -1,8 +1,4 @@
 const Announcement = require('../models/announcementModel');
-
-// @desc    Create a new announcement
-// @route   POST /api/announcements
-// @access  Private/Admin
 const createAnnouncement = async (req, res) => {
   try {
     const { title, content } = req.body;
@@ -23,9 +19,6 @@ const createAnnouncement = async (req, res) => {
   }
 };
 
-// @desc    Get all active announcements
-// @route   GET /api/announcements
-// @access  Public
 const getAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find({ isActive: true })
@@ -38,9 +31,7 @@ const getAnnouncements = async (req, res) => {
   }
 };
 
-// @desc    Get all announcements (including inactive)
-// @route   GET /api/announcements/all
-// @access  Private/Admin
+
 const getAllAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find({})
@@ -53,9 +44,6 @@ const getAllAnnouncements = async (req, res) => {
   }
 };
 
-// @desc    Update an announcement
-// @route   PUT /api/announcements/:id
-// @access  Private/Admin
 const updateAnnouncement = async (req, res) => {
   try {
     const { title, content, isActive } = req.body;
@@ -78,9 +66,6 @@ const updateAnnouncement = async (req, res) => {
   }
 };
 
-// @desc    Delete an announcement
-// @route   DELETE /api/announcements/:id
-// @access  Private/Admin
 const deleteAnnouncement = async (req, res) => {
   try {
     const announcement = await Announcement.findById(req.params.id);

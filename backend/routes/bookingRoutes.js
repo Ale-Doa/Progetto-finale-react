@@ -10,7 +10,6 @@ const {
 const { protect, premium, admin } = require('../middleware/authMiddleware');
 const { cleanupPastBookings } = require('../middleware/cleanupMiddleware');
 
-// Applica il middleware di pulizia a tutte le rotte che recuperano prenotazioni
 router.route('/')
   .post(protect, premium, createBooking)
   .get(cleanupPastBookings, protect, getUserBookings);

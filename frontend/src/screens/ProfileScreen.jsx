@@ -12,7 +12,6 @@ const ProfileScreen = ({ setUser }) => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Recupera sempre i dati più recenti del profilo dall'API
         const data = await getUserProfile();
         setProfile(data);
       } catch (err) {
@@ -63,11 +62,8 @@ const ProfileScreen = ({ setUser }) => {
       setLoading(true);
       try {
         await deleteUserAccount();
-        // Rimuovi le informazioni utente dal localStorage
         localStorage.removeItem('userInfo');
-        // Aggiorna lo stato dell'utente nell'app
         setUser(null);
-        // Reindirizza alla home page
         navigate('/');
       } catch (err) {
         setError(err.response?.data?.message || `Errore durante l'eliminazione dell'account`);

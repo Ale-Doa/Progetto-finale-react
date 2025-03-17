@@ -26,7 +26,6 @@ const HomeScreen = () => {
     <div className="home-screen">
       <h1>La nostra palestra</h1>
       
-      {/* Announcements Section */}
       {error && <div className="error">{error}</div>}
       {loading ? (
         <div className="loading">Loading announcements...</div>
@@ -45,7 +44,6 @@ const HomeScreen = () => {
         </div>
       ) : null}
       
-      {/* Informazioni sulla palestra */}
       <div className="gym-info">
         <div className="info-container">
           <div className="location-info">

@@ -1,28 +1,24 @@
 const Booking = require('../models/bookingModel');
 
-// Funzione per verificare se una data è un weekend o una festività italiana
 const isWeekendOrHoliday = (date) => {
   const day = date.getDay();
-  // 0 è domenica, 6 è sabato
   if (day === 0 || day === 6) {
     return true;
   }
   
-  // Festività italiane (formato MM-DD)
   const italianHolidays = [
-    '01-01', // Capodanno
-    '01-06', // Epifania
-    '04-25', // Festa della Liberazione
-    '05-01', // Festa del Lavoro
-    '06-02', // Festa della Repubblica
-    '08-15', // Ferragosto
-    '11-01', // Tutti i Santi
-    '12-08', // Immacolata Concezione
-    '12-25', // Natale
-    '12-26', // Santo Stefano
+    '01-01', 
+    '01-06', 
+    '04-25', 
+    '05-01', 
+    '06-02', 
+    '08-15', 
+    '11-01', 
+    '12-08', 
+    '12-25', 
+    '12-26', 
   ];
   
-  // Formato MM-DD per la data corrente
   const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const dayOfMonth = date.getDate().toString().padStart(2, '0');
   const dateString = `${month}-${dayOfMonth}`;
@@ -30,18 +26,13 @@ const isWeekendOrHoliday = (date) => {
   return italianHolidays.includes(dateString);
 };
 
-// @desc    Create a new booking
-// @route   POST /api/bookings
-// @access  Private/Premium
 const createBooking = async (req, res) => {
   try {
     const { date, timeSlot } = req.body;
     
-    // Convert date string to Date object
     const bookingDate = new Date(date);
     bookingDate.setHours(0, 0, 0, 0);
     
-    // Check if booking is for today or in the past
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -49,7 +40,6 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'Cannot book for today or past dates' });
     }
     
-    // Check if user already has a booking for this date
     const existingBooking = await Booking.findOne({
       user: req.user._id,
       date: bookingDate,
@@ -59,7 +49,6 @@ const createBooking = async (req, res) => {
       return res.status(400).json({ message: 'You already have a booking for this date' });
     }
     
-    // Check if the time slot has reached the maximum number of bookings (15)
     const bookingsCount = await Booking.countDocuments({
       date: bookingDate,
       timeSlot,
@@ -81,9 +70,6 @@ const createBooking = async (req, res) => {
   }
 };
 
-// @desc    Get user bookings
-// @route   GET /api/bookings
-// @access  Private
 const getUserBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user._id }).sort({ date: 1 });
@@ -93,9 +79,6 @@ const getUserBookings = async (req, res) => {
   }
 };
 
-// @desc    Delete a booking
-// @route   DELETE /api/bookings/:id
-// @access  Private
 const deleteBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
@@ -104,12 +87,10 @@ const deleteBooking = async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
     
-    // Check if booking belongs to user or user is admin
     if (booking.user.toString() !== req.user._id.toString() && req.user.membershipType !== 'admin') {
       return res.status(401).json({ message: 'Not authorized to delete this booking' });
     }
     
-    // Use deleteOne instead of remove (which is deprecated)
     await Booking.deleteOne({ _id: req.params.id });
     
     res.json({ message: 'Booking removed' });
@@ -119,9 +100,6 @@ const deleteBooking = async (req, res) => {
   }
 };
 
-// @desc    Get all bookings for a specific date
-// @route   GET /api/bookings/date/:date
-// @access  Private
 const getBookingsByDate = async (req, res) => {
   try {
     const date = new Date(req.params.date);
@@ -129,7 +107,6 @@ const getBookingsByDate = async (req, res) => {
     
     const bookings = await Booking.find({ date }).populate('user', 'name email');
     
-    // Create an array of all time slots
     const allTimeSlots = [
       '8.30-10.00',
       '10.00-12.30',
@@ -140,20 +117,18 @@ const getBookingsByDate = async (req, res) => {
       '20.00-21.30',
     ];
     
-    // Count bookings for each time slot
     const bookingCounts = {};
     for (const slot of allTimeSlots) {
       bookingCounts[slot] = await Booking.countDocuments({ date, timeSlot: slot });
     }
     
-    // Create availability array with booking counts
     const availability = allTimeSlots.map((slot) => {
       const slotBookings = bookings.filter(b => b.timeSlot === slot);
       const isFullyBooked = bookingCounts[slot] >= 15;
       
       return {
         timeSlot: slot,
-        isBooked: isFullyBooked, // Now "isBooked" means the slot is fully booked
+        isBooked: isFullyBooked, 
         bookingsCount: bookingCounts[slot],
         booking: slotBookings.length > 0 ? {
           bookingId: slotBookings[0]._id,
@@ -169,11 +144,6 @@ const getBookingsByDate = async (req, res) => {
   }
 };
 
-// Add this function to the existing bookingController.js file
-
-// @desc    Get all bookings (admin only)
-// @route   GET /api/bookings/all
-// @access  Private/Admin
 const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({})
@@ -185,9 +155,6 @@ const getAllBookings = async (req, res) => {
   }
 };
 
-// @desc    Clean up past bookings
-// @route   DELETE /api/bookings/cleanup
-// @access  Private/Admin
 const cleanupPastBookings = async (req, res) => {
   try {
     const today = new Date();
@@ -205,7 +172,6 @@ const cleanupPastBookings = async (req, res) => {
   }
 };
 
-// Don't forget to export the new function
 module.exports = {
   createBooking,
   getUserBookings,

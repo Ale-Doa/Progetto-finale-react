@@ -6,20 +6,17 @@ const {
   getUserProfile,
   getUsers,
   updateUserMembership,
-  deleteUserAccount, // Aggiungi questa importazione
+  deleteUserAccount,
 } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Public routes
 router.post('/', registerUser);
 router.post('/login', loginUser);
 
-// Protected routes
 router.route('/profile')
   .get(protect, getUserProfile)
-  .delete(protect, deleteUserAccount); // Aggiungi questa route
+  .delete(protect, deleteUserAccount); 
 
-// Admin routes
 router.route('/').get(protect, admin, getUsers);
 router.route('/:id').put(protect, admin, updateUserMembership);
 

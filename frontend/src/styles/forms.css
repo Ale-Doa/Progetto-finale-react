@@ -1,6 +1,5 @@
 @import './variables.css';
 
-/* Forms */
 .form-group {
   margin-bottom: 20px;
 }
@@ -9,7 +8,7 @@
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: var(--accent); /* Modificato da var(--dark) a var(--text-light) */
+  color: var(--accent);
 }
 
 .form-group input,
@@ -23,7 +22,6 @@
   transition: var(--transition);
 }
 
-/* Aggiunto stile specifico per le opzioni dei menu a tendina */
 .form-group select option {
   background-color: var(--dark);
   color: var(--text-light);
@@ -36,7 +34,6 @@
   box-shadow: 0 0 0 2px rgba(50, 205, 50, 0.2);
 }
 
-/* Buttons */
 button {
   background-color: var(--accent);
   color: var(--dark);
@@ -70,7 +67,6 @@ button:disabled {
   gap: 10px;
 }
 
-/* Announcement Form */
 .announcement-form-container {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);

@@ -9,10 +9,8 @@ import {
   getAllBookings // Questa importazione è corretta
 } from '../services/api';
 
-// Tipi di abbonamento disponibili
 const membershipTypes = ['basic', 'premium1', 'premium3', 'premium6', 'premium12', 'admin'];
 
-// Funzione per calcolare la data di scadenza in base al tipo di abbonamento
 const calculateExpirationDate = (user) => {
   if (!user.membershipStartDate || user.membershipType === 'basic') {
     return 'N/A';
@@ -22,13 +20,13 @@ const calculateExpirationDate = (user) => {
   let expirationDate = new Date(startDate);
   
   if (user.membershipType === 'premium1') {
-    expirationDate.setMonth(startDate.getMonth() + 1); // 1 mese
+    expirationDate.setMonth(startDate.getMonth() + 1); 
   } else if (user.membershipType === 'premium3') {
-    expirationDate.setMonth(startDate.getMonth() + 3); // 3 mesi
+    expirationDate.setMonth(startDate.getMonth() + 3); 
   } else if (user.membershipType === 'premium6') {
-    expirationDate.setMonth(startDate.getMonth() + 6); // 6 mesi
+    expirationDate.setMonth(startDate.getMonth() + 6); 
   } else if (user.membershipType === 'premium12') {
-    expirationDate.setMonth(startDate.getMonth() + 12); // 12 mesi
+    expirationDate.setMonth(startDate.getMonth() + 12); 
   }
   
   return expirationDate.toLocaleDateString();
@@ -46,19 +44,16 @@ const AdminScreen = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '' });
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-  // Add state for bookings
+  
   const [allBookings, setAllBookings] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
-  // Remove the lastCleanup state
   
-  // Update the useEffect to remove the cleanup logic
   useEffect(() => {
     fetchUsers();
     fetchAnnouncements();
     
     if (activeTab === 'bookings') {
       fetchAllBookings();
-      // Remove the cleanup check and execution
     }
   }, [activeTab]);
 
@@ -66,7 +61,6 @@ const AdminScreen = () => {
     setLoading(true);
     try {
       const data = await getAllUsers();
-      // Filtra gli utenti per escludere quelli con membershipType 'admin'
       const filteredUsers = data.filter(user => user.membershipType !== 'admin');
       setUsers(filteredUsers);
     } catch (err) {
@@ -91,7 +85,6 @@ const AdminScreen = () => {
   const handleEdit = (user) => {
     setEditingUser(user);
     setMembershipType(user.membershipType);
-    // Formatta la data per il campo input (YYYY-MM-DD)
     if (user.membershipStartDate) {
       const date = new Date(user.membershipStartDate);
       setMembershipStartDate(date.toISOString().split('T')[0]);
@@ -183,7 +176,6 @@ const AdminScreen = () => {
     }
   };
 
-  // Update the fetchAllBookings function
   const fetchAllBookings = async () => {
     setLoading(true);
     try {
@@ -196,7 +188,6 @@ const AdminScreen = () => {
     }
   };
 
-  // Function to filter bookings by date
   const filterBookingsByDate = () => {
     if (!selectedDate) return allBookings;
     
@@ -440,8 +431,6 @@ const AdminScreen = () => {
                 Reimposta Filtro
               </button>
             </div>
-            
-            {/* Remove the cleanup section with last cleanup info */}
             
             {loading ? (
               <div className="loading-spinner">Caricamento prenotazioni...</div>

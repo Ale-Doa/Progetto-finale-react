@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// The issue is that the API URL needs to be explicitly set for production
 const API_URL = import.meta.env.MODE === 'production' 
   ? 'https://progetto-finale-react.onrender.com/api'
-  : 'http://localhost:5001/api';  // Modificato da 5000 a 5001
+  : 'http://localhost:5001/api';  
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -13,7 +11,6 @@ const api = axios.create({
   },
 });
 
-// Add request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const userInfo = localStorage.getItem('userInfo');
@@ -28,7 +25,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// User API calls
 export const registerUser = async (userData) => {
   const response = await api.post('/users', userData);
   return response.data;
@@ -69,12 +65,10 @@ export const deleteBooking = async (bookingId) => {
   try {
     console.log('API call to delete booking with ID:', bookingId);
     
-    // Verifica che bookingId sia valido
     if (!bookingId) {
       throw new Error('Invalid booking ID: ' + bookingId);
     }
     
-    // Assicuriamoci che l'ID sia una stringa valida
     const sanitizedId = bookingId.toString().trim();
     
     const response = await api.delete(`/bookings/${sanitizedId}`);
@@ -83,18 +77,13 @@ export const deleteBooking = async (bookingId) => {
   } catch (error) {
     console.error('API error when deleting booking:', error);
     
-    // Log dettagliato dell'errore
     if (error.response) {
-      // La richiesta è stata effettuata e il server ha risposto con un codice di stato
-      // che non rientra nell'intervallo 2xx
       console.error('Error response data:', error.response.data);
       console.error('Error response status:', error.response.status);
       console.error('Error response headers:', error.response.headers);
     } else if (error.request) {
-      // La richiesta è stata effettuata ma non è stata ricevuta alcuna risposta
       console.error('Error request:', error.request);
     } else {
-      // Si è verificato un errore durante l'impostazione della richiesta
       console.error('Error message:', error.message);
     }
     
@@ -107,7 +96,6 @@ export const getBookingsByDate = async (date) => {
   return response.data;
 };
 
-// Announcement API calls
 export const getAnnouncements = async () => {
   const response = await api.get('/announcements');
   return response.data;

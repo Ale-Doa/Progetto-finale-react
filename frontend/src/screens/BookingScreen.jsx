@@ -10,7 +10,6 @@ const BookingScreen = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
-  // Costante per il numero massimo di prenotazioni per fascia oraria
   const MAX_BOOKINGS_PER_SLOT = 15;
 
   useEffect(() => {
@@ -41,7 +40,7 @@ const BookingScreen = () => {
     try {
       const data = await getBookingsByDate(date);
       setAvailableSlots(data);
-      setTimeSlot(''); // Resetta la fascia oraria quando si controlla una nuova disponibilità
+      setTimeSlot(''); 
     } catch (err) {
       setError(err.response?.data?.message || 'Impossibile verificare la disponibilità');
       setAvailableSlots([]);
@@ -85,7 +84,6 @@ const BookingScreen = () => {
       try {
         await deleteBooking(id);
         setSuccess('Prenotazione cancellata con successo!');
-        // Aggiorniamo la lista delle prenotazioni dopo la cancellazione
         fetchUserBookings();
       } catch (err) {
         console.error('Errore durante la cancellazione della prenotazione:', err);
@@ -96,7 +94,6 @@ const BookingScreen = () => {
     }
   };
 
-  // Formatta la data per la visualizzazione
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('it-IT', options);

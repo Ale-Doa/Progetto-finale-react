@@ -30,7 +30,6 @@ const bookingSchema = mongoose.Schema(
   }
 );
 
-// Compound index to ensure a user can only book one time slot per day
 bookingSchema.index({ user: 1, date: 1 }, { unique: true });
 
 const Booking = mongoose.model('Booking', bookingSchema);
