@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const Booking = require('../models/bookingModel'); 
+const { calculateExpiryDate, isMembershipExpired } = require('../helpers/dateHelpers');
+const { isValidEmail, isStrongPassword } = require('../helpers/validationHelpers');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -12,11 +14,22 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Validazione email
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Formato email non valido' });
+    }
+
+    // Validazione password
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ 
+        message: 'La password deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola e un numero' 
+      });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      res.status(400);
-      throw new Error('User already exists');
+      return res.status(400).json({ message: 'User already exists' });
     }
 
     const user = await User.create({
@@ -34,8 +47,7 @@ const registerUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(400);
-      throw new Error('Invalid user data');
+      res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -46,9 +58,23 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validazione email
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Formato email non valido' });
+    }
+
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+      // Verifica se l'abbonamento è scaduto
+      if (['premium1', 'premium3', 'premium6', 'premium12'].includes(user.membershipType)) {
+        if (isMembershipExpired(user.membershipStartDate, user.membershipType)) {
+          // Aggiorna l'utente a basic se l'abbonamento è scaduto
+          user.membershipType = 'basic';
+          await user.save();
+        }
+      }
+
       res.json({
         _id: user._id,
         name: user.name,
@@ -57,8 +83,7 @@ const loginUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(401);
-      throw new Error('Invalid email or password');
+      res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
     res.status(401).json({ message: error.message });
@@ -70,16 +95,21 @@ const getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
+      // Calcola la data di scadenza dell'abbonamento
+      const expiryDate = calculateExpiryDate(user.membershipStartDate, user.membershipType);
+      const isExpired = isMembershipExpired(user.membershipStartDate, user.membershipType);
+
       res.json({
         _id: user._id,
         name: user.name,
         email: user.email,
         membershipType: user.membershipType,
         membershipStartDate: user.membershipStartDate,
+        membershipExpiryDate: expiryDate,
+        isExpired: isExpired
       });
     } else {
-      res.status(404);
-      throw new Error('User not found');
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -89,7 +119,20 @@ const getUserProfile = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
-    res.json(users);
+    
+    // Aggiungi informazioni sulla scadenza per ogni utente
+    const usersWithExpiryInfo = users.map(user => {
+      const expiryDate = calculateExpiryDate(user.membershipStartDate, user.membershipType);
+      const isExpired = isMembershipExpired(user.membershipStartDate, user.membershipType);
+      
+      return {
+        ...user.toObject(),
+        membershipExpiryDate: expiryDate,
+        isExpired: isExpired
+      };
+    });
+    
+    res.json(usersWithExpiryInfo);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -104,6 +147,9 @@ const updateUserMembership = async (req, res) => {
       user.membershipStartDate = req.body.membershipStartDate || user.membershipStartDate;
 
       const updatedUser = await user.save();
+      
+      // Calcola la data di scadenza dell'abbonamento aggiornato
+      const expiryDate = calculateExpiryDate(updatedUser.membershipStartDate, updatedUser.membershipType);
 
       res.json({
         _id: updatedUser._id,
@@ -111,10 +157,10 @@ const updateUserMembership = async (req, res) => {
         email: updatedUser.email,
         membershipType: updatedUser.membershipType,
         membershipStartDate: updatedUser.membershipStartDate,
+        membershipExpiryDate: expiryDate
       });
     } else {
-      res.status(404);
-      throw new Error('User not found');
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -126,8 +172,8 @@ const deleteUserAccount = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      res.status(404);
-      throw new Error('User not found');
+      res.status(404).json({ message: 'User not found' });
+      return;
     }
 
     await Booking.deleteMany({ user: req.user._id });

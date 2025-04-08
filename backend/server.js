@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const { checkExpiredMemberships } = require('./middleware/cleanupMiddleware');
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// Esegui il controllo degli abbonamenti scaduti all'avvio del server
+app.use(checkExpiredMemberships);
 
 const userRoutes = require('./routes/userRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');

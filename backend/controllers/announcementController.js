@@ -1,10 +1,16 @@
 const Announcement = require('../models/announcementModel');
+
 const createAnnouncement = async (req, res) => {
   try {
     const { title, content } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ message: 'Please provide title and content' });
+    }
+
+    // Validazione del contenuto
+    if (content.length < 10) {
+      return res.status(400).json({ message: 'Il contenuto deve essere di almeno 10 caratteri' });
     }
 
     const announcement = await Announcement.create({
@@ -52,6 +58,11 @@ const updateAnnouncement = async (req, res) => {
     
     if (!announcement) {
       return res.status(404).json({ message: 'Announcement not found' });
+    }
+    
+    // Validazione del contenuto
+    if (content && content.length < 10) {
+      return res.status(400).json({ message: 'Il contenuto deve essere di almeno 10 caratteri' });
     }
     
     announcement.title = title || announcement.title;

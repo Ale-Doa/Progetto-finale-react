@@ -1,63 +1,62 @@
 const Booking = require('../models/bookingModel');
+const User = require('../models/userModel');
+const { isWeekendOrHoliday } = require('../helpers/dateHelpers');
+const { isValidTimeSlot } = require('../helpers/validationHelpers');
 
-const isWeekendOrHoliday = (date) => {
-  const day = date.getDay();
-  if (day === 0 || day === 6) {
-    return true;
-  }
-  
-  const italianHolidays = [
-    '01-01', 
-    '01-06', 
-    '04-25', 
-    '05-01', 
-    '06-02', 
-    '08-15', 
-    '11-01', 
-    '12-08', 
-    '12-25', 
-    '12-26', 
-  ];
-  
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const dayOfMonth = date.getDate().toString().padStart(2, '0');
-  const dateString = `${month}-${dayOfMonth}`;
-  
-  return italianHolidays.includes(dateString);
-};
+// Definizione dei time slot validi come costante
+const VALID_TIME_SLOTS = [
+  '8.30-10.00',
+  '10.00-12.30',
+  '14.00-15.30',
+  '15.30-17.00',
+  '17.00-18.30',
+  '18.30-20.00',
+  '20.00-21.30',
+];
 
 const createBooking = async (req, res) => {
   try {
     const { date, timeSlot } = req.body;
     
     const bookingDate = new Date(date);
-    bookingDate.setHours(0, 0, 0, 0);
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (bookingDate <= today) {
-      return res.status(400).json({ message: 'Cannot book for today or past dates' });
+    // Verifica se la data è un weekend o un giorno festivo
+    if (isWeekendOrHoliday(bookingDate)) {
+      return res.status(400).json({ 
+        message: 'Non è possibile prenotare nei weekend o nei giorni festivi' 
+      });
     }
     
+    // Verifica se il time slot è valido
+    if (!isValidTimeSlot(timeSlot, VALID_TIME_SLOTS)) {
+      return res.status(400).json({ message: 'Time slot non valido' });
+    }
+    
+    // Verifica se l'utente ha già una prenotazione per quella data
     const existingBooking = await Booking.findOne({
       user: req.user._id,
       date: bookingDate,
     });
     
     if (existingBooking) {
-      return res.status(400).json({ message: 'You already have a booking for this date' });
+      return res.status(400).json({ 
+        message: 'Hai già una prenotazione per questa data' 
+      });
     }
     
+    // Verifica se ci sono ancora posti disponibili per quel time slot
     const bookingsCount = await Booking.countDocuments({
       date: bookingDate,
       timeSlot,
     });
     
     if (bookingsCount >= 15) {
-      return res.status(400).json({ message: 'This time slot is fully booked' });
+      return res.status(400).json({ 
+        message: 'Non ci sono più posti disponibili per questo time slot' 
+      });
     }
     
+    // Crea la prenotazione
     const booking = await Booking.create({
       user: req.user._id,
       date: bookingDate,
@@ -107,22 +106,12 @@ const getBookingsByDate = async (req, res) => {
     
     const bookings = await Booking.find({ date }).populate('user', 'name email');
     
-    const allTimeSlots = [
-      '8.30-10.00',
-      '10.00-12.30',
-      '14.00-15.30',
-      '15.30-17.00',
-      '17.00-18.30',
-      '18.30-20.00',
-      '20.00-21.30',
-    ];
-    
     const bookingCounts = {};
-    for (const slot of allTimeSlots) {
+    for (const slot of VALID_TIME_SLOTS) {
       bookingCounts[slot] = await Booking.countDocuments({ date, timeSlot: slot });
     }
     
-    const availability = allTimeSlots.map((slot) => {
+    const availability = VALID_TIME_SLOTS.map((slot) => {
       const slotBookings = bookings.filter(b => b.timeSlot === slot);
       const isFullyBooked = bookingCounts[slot] >= 15;
       

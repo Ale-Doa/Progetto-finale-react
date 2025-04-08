@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const { isMembershipExpired } = require('../helpers/dateHelpers');
 
 const protect = async (req, res, next) => {
   let token;
@@ -43,6 +44,16 @@ const premium = (req, res, next) => {
     req.user &&
     ['premium1', 'premium3', 'premium6', 'premium12'].includes(req.user.membershipType)
   ) {
+    // Verifica se l'abbonamento è scaduto
+    if (isMembershipExpired(req.user.membershipStartDate, req.user.membershipType)) {
+      // Aggiorna l'utente a basic se l'abbonamento è scaduto
+      req.user.membershipType = 'basic';
+      req.user.save();
+      
+      res.status(401);
+      throw new Error('Il tuo abbonamento è scaduto. Rinnova per accedere a questa funzionalità.');
+    }
+    
     next();
   } else {
     res.status(401);
