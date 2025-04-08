@@ -11,7 +11,6 @@ const {
 const { protect, premium, admin } = require('../middleware/authMiddleware');
 const { cleanupPastBookings: cleanupMiddleware } = require('../middleware/cleanupMiddleware');
 
-// Applica il middleware di cleanup a tutte le route
 router.use(cleanupMiddleware);
 
 router.route('/')

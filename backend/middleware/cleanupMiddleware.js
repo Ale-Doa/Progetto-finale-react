@@ -19,12 +19,10 @@ const cleanupPastBookings = async (req, res, next) => {
 
 const checkExpiredMemberships = async (req, res, next) => {
   try {
-    // Trova tutti gli utenti con abbonamento premium
     const premiumUsers = await User.find({
       membershipType: { $in: ['premium1', 'premium3', 'premium6', 'premium12'] }
     });
     
-    // Controlla e aggiorna gli utenti con abbonamenti scaduti
     for (const user of premiumUsers) {
       if (isMembershipExpired(user.membershipStartDate, user.membershipType)) {
         user.membershipType = 'basic';

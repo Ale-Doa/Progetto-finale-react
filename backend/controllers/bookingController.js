@@ -3,7 +3,6 @@ const User = require('../models/userModel');
 const { isWeekendOrHoliday } = require('../helpers/dateHelpers');
 const { isValidTimeSlot } = require('../helpers/validationHelpers');
 
-// Definizione dei time slot validi come costante
 const VALID_TIME_SLOTS = [
   '8.30-10.00',
   '10.00-12.30',
@@ -20,19 +19,16 @@ const createBooking = async (req, res) => {
     
     const bookingDate = new Date(date);
     
-    // Verifica se la data è un weekend o un giorno festivo
     if (isWeekendOrHoliday(bookingDate)) {
       return res.status(400).json({ 
         message: 'Non è possibile prenotare nei weekend o nei giorni festivi' 
       });
     }
     
-    // Verifica se il time slot è valido
     if (!isValidTimeSlot(timeSlot, VALID_TIME_SLOTS)) {
       return res.status(400).json({ message: 'Time slot non valido' });
     }
     
-    // Verifica se l'utente ha già una prenotazione per quella data
     const existingBooking = await Booking.findOne({
       user: req.user._id,
       date: bookingDate,
@@ -44,7 +40,6 @@ const createBooking = async (req, res) => {
       });
     }
     
-    // Verifica se ci sono ancora posti disponibili per quel time slot
     const bookingsCount = await Booking.countDocuments({
       date: bookingDate,
       timeSlot,
@@ -56,7 +51,6 @@ const createBooking = async (req, res) => {
       });
     }
     
-    // Crea la prenotazione
     const booking = await Booking.create({
       user: req.user._id,
       date: bookingDate,

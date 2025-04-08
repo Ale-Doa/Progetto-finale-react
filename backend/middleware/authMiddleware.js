@@ -44,9 +44,7 @@ const premium = (req, res, next) => {
     req.user &&
     ['premium1', 'premium3', 'premium6', 'premium12'].includes(req.user.membershipType)
   ) {
-    // Verifica se l'abbonamento è scaduto
     if (isMembershipExpired(req.user.membershipStartDate, req.user.membershipType)) {
-      // Aggiorna l'utente a basic se l'abbonamento è scaduto
       req.user.membershipType = 'basic';
       req.user.save();
       

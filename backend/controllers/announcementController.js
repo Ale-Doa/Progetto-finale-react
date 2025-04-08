@@ -8,7 +8,6 @@ const createAnnouncement = async (req, res) => {
       return res.status(400).json({ message: 'Please provide title and content' });
     }
 
-    // Validazione del contenuto
     if (content.length < 10) {
       return res.status(400).json({ message: 'Il contenuto deve essere di almeno 10 caratteri' });
     }

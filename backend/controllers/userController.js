@@ -14,12 +14,10 @@ const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validazione email
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Formato email non valido' });
     }
 
-    // Validazione password
     if (!isStrongPassword(password)) {
       return res.status(400).json({ 
         message: 'La password deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola e un numero' 
@@ -58,7 +56,6 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validazione email
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Formato email non valido' });
     }
@@ -66,10 +63,8 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-      // Verifica se l'abbonamento è scaduto
       if (['premium1', 'premium3', 'premium6', 'premium12'].includes(user.membershipType)) {
         if (isMembershipExpired(user.membershipStartDate, user.membershipType)) {
-          // Aggiorna l'utente a basic se l'abbonamento è scaduto
           user.membershipType = 'basic';
           await user.save();
         }
@@ -95,7 +90,6 @@ const getUserProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-      // Calcola la data di scadenza dell'abbonamento
       const expiryDate = calculateExpiryDate(user.membershipStartDate, user.membershipType);
       const isExpired = isMembershipExpired(user.membershipStartDate, user.membershipType);
 
@@ -120,7 +114,6 @@ const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
     
-    // Aggiungi informazioni sulla scadenza per ogni utente
     const usersWithExpiryInfo = users.map(user => {
       const expiryDate = calculateExpiryDate(user.membershipStartDate, user.membershipType);
       const isExpired = isMembershipExpired(user.membershipStartDate, user.membershipType);
@@ -148,7 +141,6 @@ const updateUserMembership = async (req, res) => {
 
       const updatedUser = await user.save();
       
-      // Calcola la data di scadenza dell'abbonamento aggiornato
       const expiryDate = calculateExpiryDate(updatedUser.membershipStartDate, updatedUser.membershipType);
 
       res.json({

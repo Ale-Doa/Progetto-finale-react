@@ -17,7 +17,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Esegui il controllo degli abbonamenti scaduti all'avvio del server
 app.use(checkExpiredMemberships);
 
 const userRoutes = require('./routes/userRoutes');
