@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { createBooking, getUserBookings, deleteBooking, getBookingsByDate } from '../services/api';
 
 const BookingScreen = () => {
@@ -101,6 +102,13 @@ const BookingScreen = () => {
 
   return (
     <div className="booking-screen">
+      <Helmet>
+        <title>Prenotazioni - Gym App</title>
+        <meta name="description" content="Prenota i tuoi allenamenti e gestisci le tue prenotazioni" />
+        <meta property="og:title" content="Prenotazioni - Gym App" />
+        <meta property="og:description" content="Sistema di prenotazione per la palestra" />
+      </Helmet>
+      
       <h1>Prenotazioni Palestra</h1>
       
       {error && <div className="error">{error}</div>}

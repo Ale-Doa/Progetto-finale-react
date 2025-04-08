@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { getUserProfile, deleteUserAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -75,7 +76,13 @@ const ProfileScreen = ({ setUser }) => {
 
   return (
     <div className="profile-screen">
+      <Helmet>
+        <title>Il Mio Profilo - Gym App</title>
+        <meta name="description" content="Gestisci il tuo profilo e visualizza i dettagli del tuo abbonamento" />
+      </Helmet>
+      
       <h1>Il Mio Profilo</h1>
+      
       <div className="profile-info">
         <div className="info-group">
           <label>Nome:</label>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { getAnnouncements } from '../services/api';
 
 const HomeScreen = () => {
@@ -24,6 +25,13 @@ const HomeScreen = () => {
 
   return (
     <div className="home-screen">
+      <Helmet>
+        <title>Gym App - La tua palestra online</title>
+        <meta name="description" content="Benvenuto nella nostra palestra. Scopri i nostri abbonamenti e servizi." />
+        <meta property="og:title" content="Gym App - La tua palestra online" />
+        <meta property="og:description" content="Prenota i tuoi allenamenti e gestisci il tuo abbonamento" />
+      </Helmet>
+      
       <h1>La nostra palestra</h1>
       
       {error && <div className="error">{error}</div>}

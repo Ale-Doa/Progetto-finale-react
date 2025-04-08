@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { 
   getAllUsers, 
   updateUserMembership, 
@@ -6,7 +7,7 @@ import {
   createAnnouncement, 
   updateAnnouncement, 
   deleteAnnouncement, 
-  getAllBookings // Questa importazione è corretta
+  getAllBookings
 } from '../services/api';
 
 const membershipTypes = ['basic', 'premium1', 'premium3', 'premium6', 'premium12', 'admin'];
@@ -203,6 +204,11 @@ const AdminScreen = () => {
 
   return (
     <div className="admin-screen">
+      <Helmet>
+        <title>Pannello Amministrazione - Gym App</title>
+        <meta name="description" content="Gestisci utenti, prenotazioni e annunci della palestra" />
+      </Helmet>
+      
       <h1>Pannello di Amministrazione</h1>
       
       {error && <div className="error">{error}</div>}
@@ -232,63 +238,59 @@ const AdminScreen = () => {
       {activeTab === 'users' && (
         <div className="users-management">
           <h2>Gestione Utenti</h2>
-          
-          {loading && !editingUser ? (
+          {loading ? (
             <div>Caricamento in corso...</div>
           ) : (
-            <table className="users-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Email</th>
-                  <th>Abbonamento</th>
-                  <th>Data Inizio</th>
-                  <th>Scadenza</th>
-                  <th>Azioni</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user._id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.membershipType}</td>
-                    <td>{user.membershipStartDate ? new Date(user.membershipStartDate).toLocaleDateString() : 'N/A'}</td>
-                    <td>{calculateExpirationDate(user)}</td>
-                    <td>
-                      <button onClick={() => handleEdit(user)}>Modifica</button>
-                    </td>
+            <div className="users-list">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Abbonamento</th>
+                    <th>Data Inizio</th>
+                    <th>Data Scadenza</th>
+                    <th>Azioni</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map(user => (
+                    <tr key={user._id}>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.membershipType}</td>
+                      <td>{user.membershipStartDate ? new Date(user.membershipStartDate).toLocaleDateString() : 'N/A'}</td>
+                      <td>{calculateExpirationDate(user)}</td>
+                      <td>
+                        <button onClick={() => handleEdit(user)}>Modifica</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           
           {editingUser && (
-            <div className="edit-user">
-              <h3>Modifica Abbonamento Utente</h3>
+            <div className="edit-user-form">
+              <h3>Modifica Abbonamento</h3>
               <div className="form-group">
-                <label>Nome:</label>
-                <p>{editingUser.name}</p>
+                <label>Utente: {editingUser.name}</label>
               </div>
               <div className="form-group">
-                <label>Email:</label>
-                <p>{editingUser.email}</p>
-              </div>
-              <div className="form-group">
-                <label htmlFor="membershipType">Tipo di Abbonamento:</label>
+                <label htmlFor="membershipType">Tipo Abbonamento</label>
                 <select
                   id="membershipType"
                   value={membershipType}
                   onChange={(e) => setMembershipType(e.target.value)}
                 >
-                  {membershipTypes.filter(type => type !== 'admin').map((type) => (
+                  {membershipTypes.map(type => (
                     <option key={type} value={type}>{type}</option>
                   ))}
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="membershipStartDate">Data di Inizio:</label>
+                <label htmlFor="membershipStartDate">Data Inizio</label>
                 <input
                   type="date"
                   id="membershipStartDate"
@@ -296,11 +298,11 @@ const AdminScreen = () => {
                   onChange={(e) => setMembershipStartDate(e.target.value)}
                 />
               </div>
-              <div className="button-group">
+              <div className="form-actions">
                 <button onClick={handleUpdate} disabled={loading}>
                   {loading ? 'Aggiornamento...' : 'Aggiorna'}
                 </button>
-                <button onClick={handleCancel} disabled={loading}>Annulla</button>
+                <button onClick={handleCancel}>Annulla</button>
               </div>
             </div>
           )}
@@ -315,7 +317,7 @@ const AdminScreen = () => {
             <h3>Crea Nuovo Annuncio</h3>
             <form onSubmit={handleCreateAnnouncement}>
               <div className="form-group">
-                <label htmlFor="title">Titolo:</label>
+                <label htmlFor="title">Titolo</label>
                 <input
                   type="text"
                   id="title"
@@ -325,7 +327,7 @@ const AdminScreen = () => {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="content">Contenuto:</label>
+                <label htmlFor="content">Contenuto</label>
                 <textarea
                   id="content"
                   value={newAnnouncement.content}
@@ -341,21 +343,21 @@ const AdminScreen = () => {
           
           <div className="announcements-list">
             <h3>Annunci Esistenti</h3>
-            {loading && !editingAnnouncement ? (
+            {loading ? (
               <div>Caricamento in corso...</div>
             ) : announcements.length === 0 ? (
               <p>Nessun annuncio disponibile.</p>
             ) : (
-              <div className="announcements-grid">
-                {announcements.map((announcement) => (
+              <div>
+                {announcements.map(announcement => (
                   <div key={announcement._id} className="announcement-item">
                     {editingAnnouncement && editingAnnouncement._id === announcement._id ? (
-                      <div className="edit-announcement">
+                      <div className="edit-announcement-form">
                         <div className="form-group">
-                          <label htmlFor="edit-title">Titolo:</label>
+                          <label htmlFor={`edit-title-${announcement._id}`}>Titolo</label>
                           <input
                             type="text"
-                            id="edit-title"
+                            id={`edit-title-${announcement._id}`}
                             value={editingAnnouncement.title}
                             onChange={(e) => setEditingAnnouncement({
                               ...editingAnnouncement,
@@ -365,9 +367,9 @@ const AdminScreen = () => {
                           />
                         </div>
                         <div className="form-group">
-                          <label htmlFor="edit-content">Contenuto:</label>
+                          <label htmlFor={`edit-content-${announcement._id}`}>Contenuto</label>
                           <textarea
-                            id="edit-content"
+                            id={`edit-content-${announcement._id}`}
                             value={editingAnnouncement.content}
                             onChange={(e) => setEditingAnnouncement({
                               ...editingAnnouncement,
@@ -376,27 +378,21 @@ const AdminScreen = () => {
                             required
                           />
                         </div>
-                        <div className="button-group">
+                        <div className="form-actions">
                           <button onClick={handleUpdateAnnouncement} disabled={loading}>
                             {loading ? 'Aggiornamento...' : 'Aggiorna'}
                           </button>
-                          <button onClick={() => setEditingAnnouncement(null)} disabled={loading}>
-                            Annulla
-                          </button>
+                          <button onClick={() => setEditingAnnouncement(null)}>Annulla</button>
                         </div>
                       </div>
                     ) : (
                       <>
                         <h4>{announcement.title}</h4>
                         <p>{announcement.content}</p>
-                        <small>Pubblicato il: {new Date(announcement.createdAt).toLocaleDateString()}</small>
+                        <small>Creato il: {new Date(announcement.createdAt).toLocaleDateString()}</small>
                         <div className="announcement-actions">
-                          <button onClick={() => handleEditAnnouncement(announcement)}>
-                            Modifica
-                          </button>
-                          <button className='cancel-btn' onClick={() => handleDeleteAnnouncement(announcement._id)}>
-                            Elimina
-                          </button>
+                          <button onClick={() => handleEditAnnouncement(announcement)}>Modifica</button>
+                          <button onClick={() => handleDeleteAnnouncement(announcement._id)}>Elimina</button>
                         </div>
                       </>
                     )}
@@ -412,57 +408,47 @@ const AdminScreen = () => {
         <div className="bookings-management">
           <h2>Gestione Prenotazioni</h2>
           
-          <div className="bookings-actions">
-            <div className="filter-section">
-              <label htmlFor="date-filter">Filtra per data:</label>
-              <input
-                type="date"
-                id="date-filter"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-              <button 
-                className="reset-filter-btn"
-                onClick={() => {
-                  setSelectedDate('');
-                  fetchAllBookings();
-                }}
-              >
-                Reimposta Filtro
-              </button>
-            </div>
-            
-            {loading ? (
-              <div className="loading-spinner">Caricamento prenotazioni...</div>
-            ) : (
-              <div className="bookings-table-container">
-                {filterBookingsByDate().length === 0 ? (
-                  <p className="no-data-message">Nessuna prenotazione trovata.</p>
-                ) : (
-                  <table className="bookings-table">
-                    <thead>
-                      <tr>
-                        <th>Utente</th>
-                        <th>Email</th>
-                        <th>Data</th>
-                        <th>Fascia Oraria</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filterBookingsByDate().map((booking) => (
-                        <tr key={booking._id}>
-                          <td>{booking.user?.name || 'N/A'}</td>
-                          <td>{booking.user?.email || 'N/A'}</td>
-                          <td>{new Date(booking.date).toLocaleDateString()}</td>
-                          <td>{booking.timeSlot}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            )}
+          <div className="filter-bookings">
+            <label htmlFor="date-filter">Filtra per data:</label>
+            <input
+              type="date"
+              id="date-filter"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
           </div>
+          
+          {loading ? (
+            <div>Caricamento in corso...</div>
+          ) : (
+            <div className="bookings-list">
+              <h3>Prenotazioni {selectedDate ? `per il ${new Date(selectedDate).toLocaleDateString()}` : ''}</h3>
+              {filterBookingsByDate().length === 0 ? (
+                <p>Nessuna prenotazione trovata.</p>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Utente</th>
+                      <th>Email</th>
+                      <th>Data</th>
+                      <th>Fascia Oraria</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filterBookingsByDate().map(booking => (
+                      <tr key={booking._id}>
+                        <td>{booking.user?.name || 'Utente sconosciuto'}</td>
+                        <td>{booking.user?.email || 'Email sconosciuta'}</td>
+                        <td>{new Date(booking.date).toLocaleDateString()}</td>
+                        <td>{booking.timeSlot}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

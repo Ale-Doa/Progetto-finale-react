@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/api';
 
@@ -29,6 +30,11 @@ const LoginScreen = ({ setUser }) => {
 
   return (
     <div className="login-screen">
+      <Helmet>
+        <title>Accedi - Gym App</title>
+        <meta name="description" content="Accedi al tuo account per gestire prenotazioni e abbonamento" />
+      </Helmet>
+      
       <h1>Accedi</h1>
       {error && <div className="error">{error}</div>}
       <form onSubmit={submitHandler}>
