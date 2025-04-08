@@ -5,15 +5,6 @@ const { checkExpiredMemberships } = require('./middleware/cleanupMiddleware');
 
 dotenv.config();
 
-if (process.env.MONGO_URI) {
-  const [prefix, rest] = process.env.MONGO_URI.split('://');
-  const [credentials, remainder] = rest.split('@');
-  const [username, password] = credentials.split(':');
-  
-  const encodedPassword = encodeURIComponent(password);
-  process.env.MONGO_URI = `${prefix}://${username}:${encodedPassword}@${remainder}`;
-}
-
 const connectDB = require('./config/db');
 
 connectDB();
