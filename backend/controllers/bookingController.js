@@ -105,18 +105,26 @@ const getBookingsByDate = async (req, res) => {
       bookingCounts[slot] = await Booking.countDocuments({ date, timeSlot: slot });
     }
     
+    const userHasBooking = await Booking.findOne({ 
+      user: req.user._id,
+      date
+    });
+    
     const availability = VALID_TIME_SLOTS.map((slot) => {
       const slotBookings = bookings.filter(b => b.timeSlot === slot);
       const isFullyBooked = bookingCounts[slot] >= 15;
+      const userBookingForThisSlot = slotBookings.find(b => 
+        b.user._id.toString() === req.user._id.toString()
+      );
       
       return {
         timeSlot: slot,
-        isBooked: isFullyBooked, 
+        isBooked: isFullyBooked || !!userBookingForThisSlot || !!userHasBooking, 
         bookingsCount: bookingCounts[slot],
-        booking: slotBookings.length > 0 ? {
-          bookingId: slotBookings[0]._id,
-          userName: slotBookings[0].user.name,
-          userEmail: slotBookings[0].user.email,
+        booking: userBookingForThisSlot ? {
+          bookingId: userBookingForThisSlot._id,
+          userName: userBookingForThisSlot.user.name,
+          userEmail: userBookingForThisSlot.user.email,
         } : null,
       };
     });

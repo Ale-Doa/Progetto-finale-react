@@ -139,7 +139,7 @@ const BookingScreen = () => {
                   {availableSlots.map((slot) => (
                     !slot.isBooked && (
                       <option key={slot.timeSlot} value={slot.timeSlot}>
-                        {slot.timeSlot} - {MAX_BOOKINGS_PER_SLOT - (slot.bookingsCount || 0)} posti disponibili
+                        {slot.timeSlot} - {MAX_BOOKINGS_PER_SLOT - slot.bookingsCount} posti disponibili
                       </option>
                     )
                   ))}
@@ -147,7 +147,7 @@ const BookingScreen = () => {
               </div>
               
               <button type="submit" disabled={loading || !timeSlot}>
-                {loading ? 'Caricamento...' : 'Prenota Ora'}
+                Prenota
               </button>
             </>
           )}
